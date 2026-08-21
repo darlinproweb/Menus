@@ -1,0 +1,91 @@
+@import "tailwindcss";
+
+/* ============================================================
+   Tokens compartidos por defecto (usados por la plantilla
+   "ticket-clasico"). Cualquier plantilla nueva puede ignorarlos
+   y definir los suyos, como hace .tema-medina más abajo.
+   ============================================================ */
+@theme inline {
+  --font-display: var(--font-fraunces);
+  --font-mono: var(--font-plex-mono);
+  --color-paper: #EFEAE0;
+  --color-ink: #201C16;
+  --color-ink2: #4A4338;
+  --color-forest: #2F4F3E;
+  --color-burgundy: #6B2737;
+  --color-line: #C9C0AE;
+
+  /* Tokens de la plantilla medina-grill. Se registran aquí (requisito
+     de Tailwind v4 para generar utilidades de background/text/border),
+     pero sus VALORES reales solo existen dentro de .tema-medina más
+     abajo -- fuera de ese contenedor, quedan sin definir y no afectan
+     nada. */
+  --color-background: var(--tema-medina-background, initial);
+  --color-foreground: var(--tema-medina-foreground, initial);
+  --color-card: var(--tema-medina-card, initial);
+  --color-primary: var(--tema-medina-primary, initial);
+  --color-primary-foreground: var(--tema-medina-primary-foreground, initial);
+  --color-muted-foreground: var(--tema-medina-muted-foreground, initial);
+  --font-serif: var(--tema-medina-font-serif, initial);
+  --font-sans: var(--tema-medina-font-sans, initial);
+}
+
+body {
+  background-color: #EFEAE0;
+  color: #201C16;
+}
+
+/* Firma visual de "ticket-clasico": precio unido al nombre del
+   plato con una linea punteada, como en un menu impreso clasico. */
+.menu-row {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+}
+
+.menu-row .leader {
+  flex: 1;
+  border-bottom: 1px dotted #C9C0AE;
+  margin-bottom: 0.35rem;
+  min-width: 1rem;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============================================================
+   Plantilla "medina-grill": steakhouse oscuro, dorado/rojo brasa.
+   TODO queda encerrado bajo .tema-medina para no filtrarse al
+   resto del sitio (body, otras plantillas, el panel admin).
+   ============================================================ */
+.tema-medina {
+  color-scheme: dark;
+  --tema-medina-background: oklch(0.13 0.015 25);
+  --tema-medina-foreground: oklch(0.95 0.01 80);
+  --tema-medina-card: oklch(0.17 0.018 25 / 75%);
+  --tema-medina-primary: oklch(0.82 0.17 80);
+  --tema-medina-primary-foreground: oklch(0.13 0.015 25);
+  --tema-medina-muted-foreground: oklch(0.72 0.02 75);
+  --tema-medina-font-serif: var(--font-playfair);
+  --tema-medina-font-sans: var(--font-inter);
+
+  background-color: var(--tema-medina-background);
+  color: var(--tema-medina-foreground);
+  background-image:
+    radial-gradient(ellipse 60% 40% at 50% 0%, rgba(214, 40, 40, 0.12), transparent 70%),
+    radial-gradient(circle 800px at 50% 100%, rgba(255, 199, 0, 0.05), transparent);
+}
+
+.tema-medina .text-gold-gradient {
+  background: linear-gradient(135deg, #FFE57F 0%, #FFC700 50%, #FFA000 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
