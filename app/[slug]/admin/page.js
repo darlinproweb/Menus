@@ -18,6 +18,7 @@ export default function AdminPage({ params }) {
 
   const [negocio, setNegocio] = useState(null);
   const [autorizado, setAutorizado] = useState(null); // null = checking, false = no access
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const [productos, setProductos] = useState([]);
   const [opcionesCategorias, setOpcionesCategorias] = useState([]);
   const [mostrarModalQR, setMostrarModalQR] = useState(false);
@@ -76,6 +77,7 @@ export default function AdminPage({ params }) {
     await supabase.auth.signOut();
     setNegocio(null);
     setAutorizado(null);
+    setIsSuperAdmin(false);
     setProductos([]);
   };
 
@@ -97,19 +99,30 @@ export default function AdminPage({ params }) {
     }
     setNegocio(neg);
 
-    const { data: vinculo } = await supabase
-      .from("negocio_admins")
-      .select("id")
-      .eq("negocio_id", neg.id)
-      .eq("user_id", session.user.id)
-      .maybeSingle();
+    const [{ data: vinculo }, { data: superAdminRow }] = await Promise.all([
+      supabase
+        .from("negocio_admins")
+        .select("id")
+        .eq("negocio_id", neg.id)
+        .eq("user_id", session.user.id)
+        .maybeSingle(),
+      supabase
+        .from("super_admins")
+        .select("id")
+        .eq("user_id", session.user.id)
+        .maybeSingle()
+    ]);
 
-    if (!vinculo) {
+    const esSuper = !!superAdminRow;
+    setIsSuperAdmin(esSuper);
+
+    if (!vinculo && !esSuper) {
       setAutorizado(false);
       setLoadingData(false);
       return;
     }
     setAutorizado(true);
+
 
     const [{ data: prods }, { data: cats }] = await Promise.all([
       supabase
@@ -394,7 +407,14 @@ export default function AdminPage({ params }) {
     <main className="min-h-screen px-5 py-8 max-w-2xl mx-auto">
       <header className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="font-display text-2xl">{negocio.nombre}</h1>
+          <h1 className="font-display text-2xl flex items-center gap-2">
+            {negocio.nombre}
+            {isSuperAdmin && (
+              <span className="text-[10px] font-mono font-bold bg-[#6B2737] text-white px-2 py-0.5 rounded-full border border-red-300 shadow-xs">
+                👑 Super Admin
+              </span>
+            )}
+          </h1>
           <p className="text-xs text-ink2 font-mono">{session.user.email}</p>
         </div>
         <button onClick={cerrarSesion} className="text-sm underline shrink-0">

@@ -93,7 +93,22 @@ values (
 
 Desde ese momento, ese usuario/empleado puede iniciar sesión directamente en `/mi-restaurante/admin` usando su correo y contraseña. Row Level Security en Supabase garantiza que solo edite los productos de ese negocio.
 
-## 6. Agregar productos por SQL (opcional, para el setup inicial)
+## 6. Crear un "Super Admin" (Acceso Total a todos los negocios)
+
+Si deseas tener una cuenta de Super Administrador con acceso para editar **cualquier negocio** del sistema sin tener que vincularlo uno por uno:
+
+1. Ejecuta la migración [`supabase/migration_super_admin.sql`](file:///c:/Users/Personal/Menus/nexolink-menus/supabase/migration_super_admin.sql) en el **SQL Editor** de Supabase.
+2. Copia el `User ID` de tu usuario en **Authentication > Users**.
+3. Inserta tu `user_id` en la tabla `super_admins`:
+
+```sql
+insert into super_admins (user_id)
+values ('TU-USER-ID-DE-SUPABASE');
+```
+
+Cualquier usuario en la tabla `super_admins` tendrá un distintivo `👑 Super Admin` y acceso completo a todos los negocios en `/[slug]/admin`.
+
+## 7. Agregar productos por SQL (opcional, para el setup inicial)
 
 Cuando cierras un cliente nuevo, cargar su inventario inicial es más rápido
 por SQL que uno por uno en el panel:
