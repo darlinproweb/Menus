@@ -9,7 +9,10 @@ export default function AdminPage({ params }) {
 
   const [session, setSession] = useState(null);
   const [loadingAuth, setLoadingAuth] = useState(true);
+  const [modoAuth, setModoAuth] = useState("password"); // "password" o "magiclink"
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [submittingAuth, setSubmittingAuth] = useState(false);
   const [magicLinkSent, setMagicLinkSent] = useState(false);
   const [authError, setAuthError] = useState("");
 
@@ -34,19 +37,40 @@ export default function AdminPage({ params }) {
     return () => listener.subscription.unsubscribe();
   }, []);
 
+  const iniciarSesionPassword = async (e) => {
+    e.preventDefault();
+    setAuthError("");
+    setSubmittingAuth(true);
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password
+    });
+    setSubmittingAuth(false);
+    if (error) {
+      if (error.message.toLowerCase().includes("invalid login credentials")) {
+        setAuthError("Credenciales incorrectas. Revisa el correo y la contraseña.");
+      } else {
+         setAuthError(error.message);
+      }
+    }
+  };
+
   const enviarMagicLink = async (e) => {
     e.preventDefault();
     setAuthError("");
+    setSubmittingAuth(true);
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: { emailRedirectTo: typeof window !== "undefined" ? window.location.href : undefined }
     });
+    setSubmittingAuth(false);
     if (error) {
       setAuthError(error.message);
     } else {
       setMagicLinkSent(true);
     }
   };
+
 
   const cerrarSesion = async () => {
     await supabase.auth.signOut();
@@ -218,40 +242,126 @@ export default function AdminPage({ params }) {
 
   if (!session) {
     return (
-      <main className="min-h-screen flex items-center justify-center px-6">
-        <form onSubmit={enviarMagicLink} className="w-full max-w-sm">
-          <h1 className="font-display text-2xl text-ink mb-1">Panel del negocio</h1>
-          <p className="text-ink2 text-sm mb-6">
-            Ingresa el correo con el que NexoLink te registró.
+      <main className="min-h-screen flex items-center justify-center px-6 py-12">
+        <div className="w-full max-w-sm bg-white/80 backdrop-blur-md border border-line rounded-2xl p-6 shadow-lg">
+          <h1 className="font-display text-2xl text-ink mb-1 text-center">Panel del negocio</h1>
+          <p className="text-ink2 text-xs mb-5 text-center">
+            Inicia sesión para gestionar los productos y precios de <strong>/{slug}</strong>.
           </p>
 
-          {magicLinkSent ? (
-            <p className="text-sm bg-white/70 border border-line rounded p-3">
-              Te enviamos un enlace a <strong>{email}</strong>. Ábrelo desde este
-              mismo dispositivo para entrar.
-            </p>
-          ) : (
-            <>
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="tucorreo@negocio.com"
-                className="w-full border border-line rounded px-3 py-2 mb-3 bg-white/70"
-              />
+          {/* Pestañas de selección de método */}
+          <div className="flex bg-[#EFEAE0] p-1 rounded-xl border border-line/60 mb-5 text-xs font-mono">
+            <button
+              type="button"
+              onClick={() => {
+                setModoAuth("password");
+                setAuthError("");
+              }}
+              className={`flex-1 py-2 rounded-lg font-semibold transition-all ${
+                modoAuth === "password"
+                  ? "bg-ink text-paper shadow-xs"
+                  : "text-ink2 hover:text-ink"
+              }`}
+            >
+              🔑 Credenciales
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                setModoAuth("magiclink");
+                setAuthError("");
+              }}
+              className={`flex-1 py-2 rounded-lg font-semibold transition-all ${
+                modoAuth === "magiclink"
+                  ? "bg-ink text-paper shadow-xs"
+                  : "text-ink2 hover:text-ink"
+              }`}
+            >
+              ✉️ Enlace Mágico
+            </button>
+          </div>
+
+          {modoAuth === "password" ? (
+            <form onSubmit={iniciarSesionPassword} className="space-y-3">
+              <div>
+                <label className="block text-xs font-mono text-ink2 mb-1">
+                  Correo del Administrador o Empleado
+                </label>
+                <input
+                  type="email"
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="admin@negocio.com"
+                  className="w-full border border-line rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-ink"
+                />
+              </div>
+
+              <div>
+                <label className="block text-xs font-mono text-ink2 mb-1">
+                  Contraseña
+                </label>
+                <input
+                  type="password"
+                  required
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  className="w-full border border-line rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-ink"
+                />
+              </div>
+
               <button
                 type="submit"
-                className="w-full bg-ink text-paper rounded px-3 py-2 font-mono text-sm"
+                disabled={submittingAuth}
+                className="w-full bg-ink text-paper rounded-lg px-3 py-2.5 font-mono text-sm font-semibold hover:opacity-95 transition-opacity disabled:opacity-50 mt-2"
               >
-                Enviar enlace de acceso
+                {submittingAuth ? "Verificando…" : "Ingresar con Credenciales"}
               </button>
-              {authError && (
-                <p className="text-sm text-burgundy mt-2">{authError}</p>
+
+              <div className="bg-[#EFEAE0]/80 p-3 rounded-lg border border-line/60 text-[11px] text-ink2 leading-relaxed mt-4">
+                💡 <strong>Ideal para empleados:</strong> Puedes asignar credenciales de correo/contraseña a tus encargados de turno para que accedan directamente desde el local sin revisar tu correo.
+              </div>
+            </form>
+          ) : (
+            <form onSubmit={enviarMagicLink} className="space-y-3">
+              {magicLinkSent ? (
+                <div className="text-xs bg-emerald-50 border border-emerald-200 text-emerald-900 rounded-lg p-3 leading-relaxed">
+                  Te enviamos un enlace de acceso directo a <strong>{email}</strong>. Ábrelo desde este mismo navegador para entrar al panel.
+                </div>
+              ) : (
+                <>
+                  <div>
+                    <label className="block text-xs font-mono text-ink2 mb-1">
+                      Correo registrado
+                    </label>
+                    <input
+                      type="email"
+                      required
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      placeholder="tucorreo@negocio.com"
+                      className="w-full border border-line rounded-lg px-3 py-2 text-sm bg-white focus:outline-none focus:border-ink"
+                    />
+                  </div>
+                  <button
+                    type="submit"
+                    disabled={submittingAuth}
+                    className="w-full bg-ink text-paper rounded-lg px-3 py-2.5 font-mono text-sm font-semibold hover:opacity-95 transition-opacity disabled:opacity-50 mt-2"
+                  >
+                    {submittingAuth ? "Enviando…" : "Enviar enlace de acceso"}
+                  </button>
+                </>
               )}
-            </>
+            </form>
           )}
-        </form>
+
+          {authError && (
+            <p className="text-xs text-burgundy font-mono bg-burgundy/5 border border-burgundy/20 rounded-lg p-2.5 mt-3 text-center">
+              {authError}
+            </p>
+          )}
+        </div>
       </main>
     );
   }

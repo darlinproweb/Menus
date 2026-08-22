@@ -66,11 +66,9 @@ Abre:
 
 ## 5. Vincular un dueño de negocio real al panel
 
-El panel usa magic link: el dueño entra con su correo, Supabase le manda un
-enlace, y al hacer clic queda autenticado. Pero autenticarse no es lo mismo
-que tener permiso — eso lo controla la tabla `negocio_admins`.
+El panel soporta inicio de sesión con **Credenciales (Correo y Contraseña)** o mediante **Magic Link (Sin contraseña)**. La opción de credenciales es ideal para delegar el acceso a empleados, cajeros o administradores de turno en el local sin necesidad de darles acceso al correo personal del dueño.
 
-Flujo para dar de alta un cliente nuevo:
+Flujo para dar de alta un cliente o empleado nuevo:
 
 1. Crea su fila en `negocios` (o usa el SQL de ejemplo como plantilla):
 
@@ -79,12 +77,11 @@ insert into negocios (slug, nombre, whatsapp_numero, color_acento)
 values ('mi-restaurante', 'Mi Restaurante', '18091234567', '#2F4F3E');
 ```
 
-2. Pídele que entre una vez a `/mi-restaurante/admin` y pida el magic link
-   con su correo (esto crea su usuario en `auth.users` aunque todavía no
-   tenga acceso).
+2. En Supabase dashboard, ve a **Authentication > Users > Add user > Create user**:
+   - Ingresa el correo y asigna una contraseña para el dueño o empleado.
+   - O bien, pídele que ingrese con Magic Link por primera vez y configure su contraseña.
 
-3. Ve a **Authentication > Users** en Supabase, copia su `user_id`, y
-   vincúlalo a su negocio:
+3. Ve a **Authentication > Users** en Supabase, copia su `user_id`, y vincúlalo a su negocio:
 
 ```sql
 insert into negocio_admins (negocio_id, user_id)
@@ -94,9 +91,7 @@ values (
 );
 ```
 
-Desde ese momento, ese correo puede editar únicamente los productos de ese
-negocio — Row Level Security en Supabase lo garantiza a nivel de base de
-datos, no solo en el frontend.
+Desde ese momento, ese usuario/empleado puede iniciar sesión directamente en `/mi-restaurante/admin` usando su correo y contraseña. Row Level Security en Supabase garantiza que solo edite los productos de ese negocio.
 
 ## 6. Agregar productos por SQL (opcional, para el setup inicial)
 

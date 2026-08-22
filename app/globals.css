@@ -89,3 +89,55 @@ body {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* ============================================================
+   Landing Page Styling & Animations
+   ============================================================ */
+html {
+  scroll-behavior: smooth;
+}
+
+@keyframes pulseGlow {
+  0%, 100% { opacity: 0.4; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(1.05); }
+}
+
+@keyframes floatSlow {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+.animate-pulse-glow {
+  animation: pulseGlow 4s ease-in-out infinite;
+}
+
+.animate-float-slow {
+  animation: floatSlow 6s ease-in-out infinite;
+}
+
+.glass-card {
+  background: rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(201, 192, 174, 0.4);
+}
+
+.glass-card-dark {
+  background: rgba(32, 28, 22, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.text-gradient-forest {
+  background: linear-gradient(135deg, #2F4F3E 0%, #1c3227 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.text-gradient-burgundy {
+  background: linear-gradient(135deg, #6B2737 0%, #441721 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
