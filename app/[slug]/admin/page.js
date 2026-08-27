@@ -175,27 +175,47 @@ export default function AdminPage({ params }) {
   const guardarInfoNegocio = async () => {
     setSavingInfo(true);
     setInfoMsg("");
-    const { error } = await supabase
-      .from("negocios")
-      .update({
-        nombre: infoNegocio.nombre,
-        tagline: infoNegocio.tagline || null,
-        descripcion: infoNegocio.descripcion || null,
-        whatsapp_numero: infoNegocio.whatsapp_numero || null,
-        color_acento: infoNegocio.color_acento || null,
-        logo_url: infoNegocio.logo_url || null,
-        imagen_hero_url: infoNegocio.imagen_hero_url || null,
-        plantilla: infoNegocio.plantilla || "ticket-clasico",
-      })
-      .eq("id", negocio.id);
-    setSavingInfo(false);
-    if (!error) {
-      setNegocio((prev) => ({ ...prev, ...infoNegocio }));
-      setInfoMsg("✓ Información actualizada.");
-    } else {
-      setInfoMsg(`Error: ${error.message}`);
+    try {
+      const { data, error } = await supabase
+        .from("negocios")
+        .update({
+          nombre: infoNegocio.nombre,
+          tagline: infoNegocio.tagline || null,
+          descripcion: infoNegocio.descripcion || null,
+          whatsapp_numero: infoNegocio.whatsapp_numero || null,
+          color_acento: infoNegocio.color_acento || null,
+          logo_url: infoNegocio.logo_url || null,
+          imagen_hero_url: infoNegocio.imagen_hero_url || null,
+          plantilla: infoNegocio.plantilla || "ticket-clasico",
+        })
+        .eq("id", negocio.id)
+        .select();
+
+      if (error) {
+        setInfoMsg(`Error: ${error.message}`);
+      } else if (!data || data.length === 0) {
+        setInfoMsg("Error: No se pudo actualizar (revisa las políticas RLS en Supabase).");
+      } else {
+        const actualizado = data[0];
+        setNegocio(actualizado);
+        setInfoNegocio({
+          nombre: actualizado.nombre || "",
+          tagline: actualizado.tagline || "",
+          descripcion: actualizado.descripcion || "",
+          whatsapp_numero: actualizado.whatsapp_numero || "",
+          color_acento: actualizado.color_acento || "#6B2737",
+          logo_url: actualizado.logo_url || "",
+          imagen_hero_url: actualizado.imagen_hero_url || "",
+          plantilla: actualizado.plantilla || "ticket-clasico",
+        });
+        setInfoMsg("✓ Información actualizada con éxito.");
+      }
+    } catch (err) {
+      setInfoMsg(`Error: ${err.message}`);
+    } finally {
+      setSavingInfo(false);
+      setTimeout(() => setInfoMsg(""), 4000);
     }
-    setTimeout(() => setInfoMsg(""), 3000);
   };
 
   // --- Edición local ---
