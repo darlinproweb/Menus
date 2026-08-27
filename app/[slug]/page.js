@@ -42,6 +42,67 @@ async function getDatosNegocio(slug) {
   };
 }
 
+// ---------------------------------------------------------------
+// Open Graph dinámico por negocio
+// ---------------------------------------------------------------
+export async function generateMetadata({ params }) {
+  const { slug } = await params;
+  const data = await getDatosNegocio(slug);
+
+  if (!data) {
+    return {
+      title: "Menú no encontrado",
+      description: "Este negocio no está disponible."
+    };
+  }
+
+  const { negocio } = data;
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://nexomenus.netlify.app";
+  const menuUrl = `${appUrl}/${slug}`;
+
+  // Descripción enriquecida: usa el campo descripcion si existe, si no genera una genérica
+  const description = negocio.descripcion
+    ? negocio.descripcion
+    : `Explora el menú digital de ${negocio.nombre}. Escanea el QR o abre este enlace para ver precios, platos y hacer tu pedido por WhatsApp.`;
+
+  // Imagen OG: usa imagen_hero_url si es una URL absoluta, si no usa un og:image genérico
+  const ogImage =
+    negocio.imagen_hero_url && negocio.imagen_hero_url.startsWith("http")
+      ? negocio.imagen_hero_url
+      : `${appUrl}/og-default.png`;
+
+  return {
+    title: negocio.nombre,
+    description,
+    openGraph: {
+      title: `${negocio.nombre} — Menú Digital`,
+      description,
+      url: menuUrl,
+      siteName: "NexoLink Menus",
+      images: [
+        {
+          url: ogImage,
+          width: 1200,
+          height: 630,
+          alt: `Menú de ${negocio.nombre}`
+        }
+      ],
+      locale: "es_DO",
+      type: "website"
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${negocio.nombre} — Menú Digital`,
+      description,
+      images: [ogImage]
+    },
+    // Canonical URL para evitar duplicados SEO
+    alternates: {
+      canonical: menuUrl
+    }
+  };
+}
+
 export default async function MenuPage({ params }) {
   const { slug } = await params;
   const data = await getDatosNegocio(slug);

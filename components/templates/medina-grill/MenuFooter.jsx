@@ -27,7 +27,7 @@ export function MenuFooter({ negocio, slug, idioma = "es" }) {
 
       <div className="relative mx-auto max-w-4xl px-6 py-16 text-center">
         <Logo
-          logoUrl={negocio.logo_url || "/logo-medina.png"}
+          logoUrl={negocio.logo_url}
           nombre={negocio.nombre}
           size="lg"
           showTagline={Boolean(negocio.tagline)}

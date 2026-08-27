@@ -29,8 +29,20 @@ export default function Home() {
   const [slugInput, setSlugInput] = useState("medina-demo");
   const [copied, setCopied] = useState(false);
 
+  const DEMO_SLUGS = {
+    "medina-grill": "medina-demo",
+    "ticket-clasico": "restaurante-demo",
+    "bistro-chic": "bistro-demo",
+  };
+
   const handleCopy = () => {
-    const fullUrl = `${typeof window !== "undefined" ? window.location.origin : ""}/${slugInput}`;
+    const defaultBase = process.env.NEXT_PUBLIC_APP_URL || "https://nexomenus.netlify.app";
+    const baseUrl =
+      process.env.NEXT_PUBLIC_APP_URL ||
+      (typeof window !== "undefined" && !window.location.hostname.includes("localhost") && !window.location.hostname.includes("127.0.0.1")
+        ? window.location.origin
+        : defaultBase);
+    const fullUrl = `${baseUrl.replace(/\/+$/, "")}/${slugInput}`;
     navigator.clipboard.writeText(fullUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
@@ -89,7 +101,7 @@ export default function Home() {
               className="inline-flex items-center gap-2 text-xs font-mono font-medium px-4 py-2 rounded-full bg-[#6B2737] text-white shadow-md hover:bg-[#441721] transition-all hover:shadow-lg"
             >
               <Flame className="w-3.5 h-3.5 text-amber-300" />
-              Demo Medina Grill
+              Demo Fuego &amp; Brasa
             </Link>
           </div>
         </div>
@@ -119,7 +131,7 @@ export default function Home() {
         <div className="mt-10 max-w-xl mx-auto bg-white/90 p-2 sm:p-3 rounded-2xl border border-[#C9C0AE] shadow-lg shadow-[#6B2737]/5 flex flex-col sm:flex-row items-center gap-2">
           <div className="flex items-center gap-2 px-3 py-2 bg-[#EFEAE0]/60 rounded-xl w-full sm:w-auto flex-1 font-mono text-xs text-[#4A4338]">
             <Globe className="w-4 h-4 text-[#2F4F3E] shrink-0" />
-            <span className="text-[#4A4338]/60 hidden sm:inline">nexolink.com/</span>
+            <span className="text-[#4A4338]/60 hidden sm:inline">nexomenus.netlify.app/</span>
             <input
               type="text"
               value={slugInput}
@@ -150,30 +162,28 @@ export default function Home() {
         <div className="mt-4 flex flex-wrap items-center justify-center gap-2 text-xs font-mono text-[#4A4338]">
           <span className="text-[#4A4338]/70">Rutas de demostración listas:</span>
           <button
-            onClick={() => {
-              setSlugInput("medina-demo");
-              setActiveTemplate("medina-grill");
-            }}
+            onClick={() => { setSlugInput("medina-demo"); setActiveTemplate("medina-grill"); }}
             className={`px-2.5 py-1 rounded-md transition-all ${
-              slugInput === "medina-demo"
-                ? "bg-[#6B2737] text-white font-bold"
-                : "bg-white/60 hover:bg-white text-[#201C16]"
+              slugInput === "medina-demo" ? "bg-[#6B2737] text-white font-bold" : "bg-white/60 hover:bg-white text-[#201C16]"
             }`}
           >
             /medina-demo
           </button>
           <button
-            onClick={() => {
-              setSlugInput("restaurante-demo");
-              setActiveTemplate("ticket-clasico");
-            }}
+            onClick={() => { setSlugInput("restaurante-demo"); setActiveTemplate("ticket-clasico"); }}
             className={`px-2.5 py-1 rounded-md transition-all ${
-              slugInput === "restaurante-demo"
-                ? "bg-[#2F4F3E] text-white font-bold"
-                : "bg-white/60 hover:bg-white text-[#201C16]"
+              slugInput === "restaurante-demo" ? "bg-[#2F4F3E] text-white font-bold" : "bg-white/60 hover:bg-white text-[#201C16]"
             }`}
           >
             /restaurante-demo
+          </button>
+          <button
+            onClick={() => { setSlugInput("bistro-demo"); setActiveTemplate("bistro-chic"); }}
+            className={`px-2.5 py-1 rounded-md transition-all ${
+              slugInput === "bistro-demo" ? "bg-amber-700 text-white font-bold" : "bg-white/60 hover:bg-white text-[#201C16]"
+            }`}
+          >
+            /bistro-demo
           </button>
         </div>
       </section>
@@ -191,35 +201,40 @@ export default function Home() {
             Cada plantilla cuenta con estilos, tipografías y orden de categorías optimizado para diferentes experiencias gastronómicas.
           </p>
 
-          {/* Toggle Controls */}
-          <div className="mt-6 inline-flex p-1.5 bg-white/80 rounded-2xl border border-[#C9C0AE] shadow-sm gap-2">
+          {/* Toggle Controls — 3 opciones */}
+          <div className="mt-6 inline-flex p-1.5 bg-white/80 rounded-2xl border border-[#C9C0AE] shadow-sm gap-1.5 flex-wrap justify-center">
             <button
-              onClick={() => {
-                setActiveTemplate("medina-grill");
-                setSlugInput("medina-demo");
-              }}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
+              onClick={() => { setActiveTemplate("medina-grill"); setSlugInput("medina-demo"); }}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
                 activeTemplate === "medina-grill"
                   ? "bg-[#201C16] text-[#FFC700] shadow-md"
                   : "text-[#4A4338] hover:text-[#201C16] hover:bg-[#EFEAE0]/50"
               }`}
             >
               <Flame className="w-4 h-4 text-amber-500" />
-              Medina Grill (Oscuro Steakhouse)
+              Fuego &amp; Brasa
             </button>
             <button
-              onClick={() => {
-                setActiveTemplate("ticket-clasico");
-                setSlugInput("restaurante-demo");
-              }}
-              className={`flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
+              onClick={() => { setActiveTemplate("ticket-clasico"); setSlugInput("restaurante-demo"); }}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
                 activeTemplate === "ticket-clasico"
                   ? "bg-[#6B2737] text-white shadow-md"
                   : "text-[#4A4338] hover:text-[#201C16] hover:bg-[#EFEAE0]/50"
               }`}
             >
               <Receipt className="w-4 h-4 text-emerald-300" />
-              Ticket Clásico (Artesanal)
+              Ticket Clásico
+            </button>
+            <button
+              onClick={() => { setActiveTemplate("bistro-chic"); setSlugInput("bistro-demo"); }}
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
+                activeTemplate === "bistro-chic"
+                  ? "bg-amber-700 text-white shadow-md"
+                  : "text-[#4A4338] hover:text-[#201C16] hover:bg-[#EFEAE0]/50"
+              }`}
+            >
+              <ChefHat className="w-4 h-4 text-amber-600" />
+              Bistro Chic
             </button>
           </div>
         </div>
@@ -228,65 +243,65 @@ export default function Home() {
         <div className="max-w-4xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
           {/* Left Description Column */}
           <div className="lg:col-span-5 space-y-6">
-            {activeTemplate === "medina-grill" ? (
+            {activeTemplate === "medina-grill" && (
               <div className="bg-white/80 backdrop-blur-md p-6 rounded-3xl border border-[#C9C0AE] shadow-xl space-y-4">
                 <div className="w-12 h-12 rounded-2xl bg-amber-500/10 flex items-center justify-center text-amber-600 font-bold">
                   <Flame className="w-6 h-6" />
                 </div>
-                <h3 className="font-display text-2xl font-bold text-[#201C16]">
-                  Plantilla Medina Grill
-                </h3>
+                <h3 className="font-display text-2xl font-bold text-[#201C16]">Plantilla Fuego &amp; Brasa</h3>
                 <p className="text-sm text-[#4A4338] leading-relaxed">
                   Diseño premium en modo oscuro inspirado en Steak Houses de alta gama. Cuenta con jerarquía de 3 niveles: <strong className="text-[#201C16]">Categorías &gt; Grupos &gt; Productos</strong>, notas aclaratorias, precios formato texto y detalles dorados.
                 </p>
                 <div className="space-y-2 pt-2 border-t border-[#C9C0AE]/40 text-xs font-mono text-[#4A4338]">
-                  <div className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-emerald-600" /> Estética Oscura Elegante
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-emerald-600" /> Buscador Interactivo Integrado
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-emerald-600" /> Soporte para Etiquetas "Destacado"
-                  </div>
+                  <div className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-600" /> Estética Oscura Elegante</div>
+                  <div className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-600" /> Buscador Interactivo Integrado</div>
+                  <div className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-600" /> Soporte para Etiquetas "Destacado"</div>
                 </div>
                 <div className="pt-4">
-                  <Link
-                    href="/medina-demo"
-                    className="inline-flex items-center justify-center gap-2 w-full px-5 py-3 rounded-xl bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white font-semibold text-sm transition-all shadow-md"
-                  >
-                    Ver Demo Real Medina Grill <ExternalLink className="w-4 h-4" />
+                  <Link href="/medina-demo" className="inline-flex items-center justify-center gap-2 w-full px-5 py-3 rounded-xl bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white font-semibold text-sm transition-all shadow-md">
+                    Ver Demo Real Fuego &amp; Brasa <ExternalLink className="w-4 h-4" />
                   </Link>
                 </div>
               </div>
-            ) : (
+            )}
+            {activeTemplate === "ticket-clasico" && (
               <div className="bg-white/80 backdrop-blur-md p-6 rounded-3xl border border-[#C9C0AE] shadow-xl space-y-4">
                 <div className="w-12 h-12 rounded-2xl bg-[#6B2737]/10 flex items-center justify-center text-[#6B2737] font-bold">
                   <Receipt className="w-6 h-6" />
                 </div>
-                <h3 className="font-display text-2xl font-bold text-[#201C16]">
-                  Plantilla Ticket Clásico
-                </h3>
+                <h3 className="font-display text-2xl font-bold text-[#201C16]">Plantilla Ticket Clásico</h3>
                 <p className="text-sm text-[#4A4338] leading-relaxed">
                   Inspirada en el encanto de los tickets impresos retro con líderes punteados entre el plato y el precio. Ideal para cafeterías, bistrós, panaderías y locales tradicionales.
                 </p>
                 <div className="space-y-2 pt-2 border-t border-[#C9C0AE]/40 text-xs font-mono text-[#4A4338]">
-                  <div className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-emerald-600" /> Fondo Papel Cálido
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-emerald-600" /> Conexión con Pedidos por WhatsApp
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Check className="w-4 h-4 text-emerald-600" /> Formato de Precios en DOP
-                  </div>
+                  <div className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-600" /> Fondo Papel Cálido</div>
+                  <div className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-600" /> Conexión con Pedidos por WhatsApp</div>
+                  <div className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-600" /> Formato de Precios en DOP</div>
                 </div>
                 <div className="pt-4">
-                  <Link
-                    href="/restaurante-demo"
-                    className="inline-flex items-center justify-center gap-2 w-full px-5 py-3 rounded-xl bg-[#6B2737] hover:bg-[#441721] text-white font-semibold text-sm transition-all shadow-md"
-                  >
+                  <Link href="/restaurante-demo" className="inline-flex items-center justify-center gap-2 w-full px-5 py-3 rounded-xl bg-[#6B2737] hover:bg-[#441721] text-white font-semibold text-sm transition-all shadow-md">
                     Ver Demo Real Ticket Clásico <ExternalLink className="w-4 h-4" />
+                  </Link>
+                </div>
+              </div>
+            )}
+            {activeTemplate === "bistro-chic" && (
+              <div className="bg-white/80 backdrop-blur-md p-6 rounded-3xl border border-[#C9C0AE] shadow-xl space-y-4">
+                <div className="w-12 h-12 rounded-2xl bg-amber-700/10 flex items-center justify-center text-amber-700 font-bold">
+                  <ChefHat className="w-6 h-6" />
+                </div>
+                <h3 className="font-display text-2xl font-bold text-[#201C16]">Plantilla Bistro Chic</h3>
+                <p className="text-sm text-[#4A4338] leading-relaxed">
+                  Diseño luminoso y sofisticado estilo cafetería artesanal. Paleta marfil, oliva y terracota con tarjetas flotantes y una <strong className="text-[#201C16]">bandeja de pedidos</strong> que envía la comanda directo por WhatsApp.
+                </p>
+                <div className="space-y-2 pt-2 border-t border-[#C9C0AE]/40 text-xs font-mono text-[#4A4338]">
+                  <div className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-600" /> Bandeja de Pedidos Flotante</div>
+                  <div className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-600" /> Buscador & Filtro por Categoría</div>
+                  <div className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-600" /> Ideal para Cafeterías y Brunch</div>
+                </div>
+                <div className="pt-4">
+                  <Link href="/bistro-demo" className="inline-flex items-center justify-center gap-2 w-full px-5 py-3 rounded-xl bg-amber-700 hover:bg-amber-800 text-white font-semibold text-sm transition-all shadow-md">
+                    Ver Demo Real Bistro Chic <ExternalLink className="w-4 h-4" />
                   </Link>
                 </div>
               </div>
@@ -303,121 +318,116 @@ export default function Home() {
 
               {/* Screen Content Wrapper */}
               <div className="rounded-[30px] overflow-hidden min-h-[520px] max-h-[560px] relative text-left shadow-inner transition-all duration-500">
-                {activeTemplate === "medina-grill" ? (
+
+                {/* === MOCKUP: FUEGO & BRASA === */}
+                {activeTemplate === "medina-grill" && (
                   <div className="tema-medina p-6 min-h-[560px] flex flex-col justify-between overflow-y-auto">
                     <div>
-                      {/* Brand Header */}
                       <div className="text-center pt-6 pb-4 border-b border-amber-500/20">
-                        <div className="w-12 h-12 rounded-full bg-amber-500/20 border border-amber-500/40 flex items-center justify-center mx-auto mb-2 text-amber-400 font-serif font-bold text-xl">
-                          M
-                        </div>
-                        <h4 className="font-serif text-xl font-bold text-gold-gradient">
-                          Medina's Grill
-                        </h4>
-                        <p className="text-[10px] uppercase font-mono tracking-widest text-amber-200/60 mt-0.5">
-                          Steakhouse & Bar
-                        </p>
+                        <div className="w-12 h-12 rounded-full bg-amber-500/20 border border-amber-500/40 flex items-center justify-center mx-auto mb-2 text-amber-400 font-serif font-bold text-xl">🔥</div>
+                        <h4 className="font-serif text-xl font-bold text-gold-gradient">Fuego &amp; Brasa</h4>
+                        <p className="text-[10px] uppercase font-mono tracking-widest text-amber-200/60 mt-0.5">Steakhouse &amp; Grill</p>
                       </div>
-
-                      {/* Mock Menu Categories */}
                       <div className="mt-4 space-y-4">
                         <div>
-                          <span className="text-[10px] font-mono uppercase tracking-wider text-amber-400 font-bold block mb-2">
-                            CORTES PREMIUM
-                          </span>
+                          <span className="text-[10px] font-mono uppercase tracking-wider text-amber-400 font-bold block mb-2">CORTES PREMIUM</span>
                           <div className="bg-amber-950/40 p-3 rounded-xl border border-amber-500/20 space-y-2">
                             <div className="flex justify-between items-baseline">
-                              <span className="font-serif text-sm font-semibold text-amber-100">
-                                Ribeye Importado 12oz
-                              </span>
-                              <span className="font-mono text-xs text-amber-400 font-bold">
-                                RD$ 1,850
-                              </span>
+                              <span className="font-serif text-sm font-semibold text-amber-100">Ribeye Importado 12oz</span>
+                              <span className="font-mono text-xs text-amber-400 font-bold">RD$ 1,850</span>
                             </div>
-                            <p className="text-[11px] text-amber-200/70">
-                              Corte jugoso a la parrilla con mantequilla de hierbas.
-                            </p>
+                            <p className="text-[11px] text-amber-200/70">Corte jugoso a la parrilla con mantequilla de hierbas.</p>
                           </div>
                         </div>
-
                         <div>
                           <div className="bg-amber-950/40 p-3 rounded-xl border border-amber-500/20 space-y-2">
                             <div className="flex justify-between items-baseline">
-                              <span className="font-serif text-sm font-semibold text-amber-100">
-                                Churrasco Angus 10oz
-                              </span>
-                              <span className="font-mono text-xs text-amber-400 font-bold">
-                                RD$ 1,450
-                              </span>
+                              <span className="font-serif text-sm font-semibold text-amber-100">Churrasco Angus 10oz</span>
+                              <span className="font-mono text-xs text-amber-400 font-bold">RD$ 1,450</span>
                             </div>
-                            <p className="text-[11px] text-amber-200/70">
-                              Acompañado de chimichurri artesanal y yuca frita.
-                            </p>
+                            <p className="text-[11px] text-amber-200/70">Acompañado de chimichurri artesanal y yuca frita.</p>
                           </div>
                         </div>
                       </div>
                     </div>
-
                     <div className="pt-4 border-t border-amber-500/20 text-center">
-                      <span className="text-[10px] font-mono text-amber-300/80 bg-amber-950/60 px-3 py-1 rounded-full border border-amber-500/30">
-                        ✨ Plantilla Medina Grill Activa
-                      </span>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="bg-[#EFEAE0] text-[#201C16] p-6 min-h-[560px] flex flex-col justify-between overflow-y-auto">
-                    <div>
-                      {/* Ticket Header */}
-                      <div className="text-center pt-6 pb-4 border-b border-[#C9C0AE]">
-                        <h4 className="font-display text-2xl font-bold text-[#6B2737]">
-                          Restaurante Demo
-                        </h4>
-                        <p className="text-[10px] font-mono uppercase tracking-widest text-[#4A4338] mt-1">
-                          Platos & Catálogo Digital
-                        </p>
-                      </div>
-
-                      {/* Ticket Menu Items */}
-                      <div className="mt-6 space-y-4">
-                        <span className="font-mono text-xs uppercase tracking-widest text-[#6B2737] font-bold block">
-                          DESAYUNOS & CAFÉ
-                        </span>
-                        <div className="space-y-3">
-                          <div>
-                            <div className="menu-row">
-                              <span className="font-display text-sm font-semibold">
-                                Cappuccino Artesanal
-                              </span>
-                              <span className="leader" />
-                              <span className="font-mono text-xs">RD$ 195</span>
-                            </div>
-                            <p className="text-[11px] text-[#4A4338] mt-0.5">
-                              Espresso doble con leche cremada y canela.
-                            </p>
-                          </div>
-                          <div>
-                            <div className="menu-row">
-                              <span className="font-display text-sm font-semibold">
-                                Tostada de Aguacate
-                              </span>
-                              <span className="leader" />
-                              <span className="font-mono text-xs">RD$ 320</span>
-                            </div>
-                            <p className="text-[11px] text-[#4A4338] mt-0.5">
-                              Pan de masa madre, huevo ponchado y tomate cherry.
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-
-                    <div className="pt-4 border-t border-[#C9C0AE] text-center">
-                      <span className="text-[10px] font-mono text-[#6B2737] bg-white/80 px-3 py-1 rounded-full border border-[#C9C0AE]">
-                        🎟️ Plantilla Ticket Clásico Activa
-                      </span>
+                      <span className="text-[10px] font-mono text-amber-300/80 bg-amber-950/60 px-3 py-1 rounded-full border border-amber-500/30">✨ Plantilla Fuego &amp; Brasa Activa</span>
                     </div>
                   </div>
                 )}
+
+                {/* === MOCKUP: TICKET CLÁSICO === */}
+                {activeTemplate === "ticket-clasico" && (
+                  <div className="bg-[#EFEAE0] text-[#201C16] p-6 min-h-[560px] flex flex-col justify-between overflow-y-auto">
+                    <div>
+                      <div className="text-center pt-6 pb-4 border-b border-[#C9C0AE]">
+                        <h4 className="font-display text-2xl font-bold text-[#6B2737]">Restaurante Demo</h4>
+                        <p className="text-[10px] font-mono uppercase tracking-widest text-[#4A4338] mt-1">Platos &amp; Catálogo Digital</p>
+                      </div>
+                      <div className="mt-6 space-y-4">
+                        <span className="font-mono text-xs uppercase tracking-widest text-[#6B2737] font-bold block">DESAYUNOS &amp; CAFÉ</span>
+                        <div className="space-y-3">
+                          <div>
+                            <div className="menu-row">
+                              <span className="font-display text-sm font-semibold">Cappuccino Artesanal</span>
+                              <span className="leader" />
+                              <span className="font-mono text-xs">RD$ 195</span>
+                            </div>
+                            <p className="text-[11px] text-[#4A4338] mt-0.5">Espresso doble con leche cremada y canela.</p>
+                          </div>
+                          <div>
+                            <div className="menu-row">
+                              <span className="font-display text-sm font-semibold">Tostada de Aguacate</span>
+                              <span className="leader" />
+                              <span className="font-mono text-xs">RD$ 320</span>
+                            </div>
+                            <p className="text-[11px] text-[#4A4338] mt-0.5">Pan de masa madre, huevo ponchado y tomate cherry.</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="pt-4 border-t border-[#C9C0AE] text-center">
+                      <span className="text-[10px] font-mono text-[#6B2737] bg-white/80 px-3 py-1 rounded-full border border-[#C9C0AE]">🎟️ Plantilla Ticket Clásico Activa</span>
+                    </div>
+                  </div>
+                )}
+
+                {/* === MOCKUP: BISTRO CHIC === */}
+                {activeTemplate === "bistro-chic" && (
+                  <div className="tema-bistro p-5 min-h-[560px] flex flex-col justify-between overflow-y-auto">
+                    <div>
+                      <div className="text-center pt-6 pb-4 border-b border-[#E2D9CB]">
+                        <div className="w-10 h-10 rounded-full bg-amber-700/10 border border-amber-700/20 flex items-center justify-center mx-auto mb-2">
+                          <ChefHat className="w-5 h-5 text-amber-700" />
+                        </div>
+                        <h4 className="font-serif-bistro text-xl font-bold text-[#2D2A26]">L'Étoile Bistro</h4>
+                        <p className="text-[10px] font-mono uppercase tracking-widest text-[#5C554C] mt-0.5">Café &amp; Brunch</p>
+                      </div>
+                      <div className="mt-4 space-y-3">
+                        <p className="text-[10px] font-mono uppercase tracking-wider text-amber-700 font-bold">CAFÉS &amp; ESPECIALIDADES</p>
+                        <div className="bistro-card rounded-2xl p-3 space-y-1">
+                          <div className="flex justify-between items-start">
+                            <span className="font-serif-bistro text-sm font-semibold text-[#2D2A26]">Flat White Australiano</span>
+                            <span className="font-mono text-xs text-amber-700 font-bold shrink-0 ml-2">RD$ 240</span>
+                          </div>
+                          <p className="text-[11px] text-[#5C554C]">Doble shot con microespuma sedosa.</p>
+                          <span className="text-[10px] font-mono text-amber-700/80 bg-amber-50 px-1.5 py-0.5 rounded-full border border-amber-200 inline-block">⭐ Destacado</span>
+                        </div>
+                        <div className="bistro-card rounded-2xl p-3 space-y-1">
+                          <div className="flex justify-between items-start">
+                            <span className="font-serif-bistro text-sm font-semibold text-[#2D2A26]">Avocado Toast &amp; Poché</span>
+                            <span className="font-mono text-xs text-amber-700 font-bold shrink-0 ml-2">RD$ 450</span>
+                          </div>
+                          <p className="text-[11px] text-[#5C554C]">Masa madre, feta y tomate confitado.</p>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="pt-3 border-t border-[#E2D9CB] text-center">
+                      <span className="text-[10px] font-mono text-amber-700 bg-amber-50 px-3 py-1 rounded-full border border-amber-200">☕ Plantilla Bistro Chic Activa</span>
+                    </div>
+                  </div>
+                )}
+
               </div>
             </div>
           </div>
@@ -642,7 +652,10 @@ export default function Home() {
               Demo Ticket Clásico
             </Link>
             <Link href="/medina-demo" className="hover:text-[#6B2737] underline">
-              Demo Medina Grill
+              Demo Fuego &amp; Brasa
+            </Link>
+            <Link href="/bistro-demo" className="hover:text-[#6B2737] underline">
+              Demo Bistro Chic
             </Link>
             <Link href="/restaurante-demo/admin" className="hover:text-[#6B2737] underline">
               Panel Admin

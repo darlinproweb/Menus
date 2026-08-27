@@ -53,9 +53,11 @@ create index if not exists idx_productos_grupo on productos(negocio_id, grupo);
 -- 4. RLS para categorias (mismo patrón que negocios/productos)
 alter table categorias enable row level security;
 
+drop policy if exists "categorias: lectura publica" on categorias;
 create policy "categorias: lectura publica" on categorias
   for select using (true);
 
+drop policy if exists "categorias: admin edita las suyas" on categorias;
 create policy "categorias: admin edita las suyas" on categorias
   for all
   using (
@@ -76,15 +78,18 @@ create policy "categorias: admin edita las suyas" on categorias
 insert into negocios (slug, nombre, whatsapp_numero, plantilla, tagline, descripcion, logo_url, imagen_hero_url)
 values (
   'medina-demo',
-  'Medina''s',
+  'Fuego & Brasa',
   '18095551234',
   'medina-grill',
-  'Meats Shop & Grill',
+  'Steakhouse & Grill',
   'Cortes premium a las brasas, mariscos frescos, mofongos criollos y la mejor selección de bar.',
-  '/logo-medina.png',
+  null,
   '/hero-parrilla.png'
 )
-on conflict (slug) do nothing;
+on conflict (slug) do update set
+  nombre = excluded.nombre,
+  tagline = excluded.tagline,
+  logo_url = excluded.logo_url;
 
 insert into categorias (negocio_id, nombre, subtitulo, orden)
 select id, 'Parrilla', 'A las brasas · ITBIS incluido', 1 from negocios where slug = 'medina-demo'

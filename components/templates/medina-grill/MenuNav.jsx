@@ -35,15 +35,21 @@ export function MenuNav({ negocio, categorias, idioma, onCambiarIdioma }) {
     >
       <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-2.5 gap-2">
         <a href="#" className="flex items-center gap-2.5 shrink-0 group">
-          <div className="relative overflow-hidden rounded-lg border border-primary/30 bg-black/50 p-0.5 transition-transform group-hover:scale-105">
-            <Image
-              src={negocio.logo_url || "/logo-medina.png"}
-              alt={`${negocio.nombre} logo`}
-              width={32}
-              height={32}
-              className="object-contain"
-            />
-          </div>
+          {negocio.logo_url ? (
+            <div className="relative overflow-hidden rounded-lg border border-primary/30 bg-black/50 p-0.5 transition-transform group-hover:scale-105">
+              <Image
+                src={negocio.logo_url}
+                alt={`${negocio.nombre} logo`}
+                width={32}
+                height={32}
+                className="object-contain"
+              />
+            </div>
+          ) : (
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg border border-primary/30 bg-gradient-to-b from-[#1C0F10] to-black text-xs font-serif font-bold text-gold-gradient shadow-inner transition-transform group-hover:scale-105">
+              {negocio.nombre?.charAt(0) || "🔥"}
+            </div>
+          )}
           <div className="hidden sm:flex flex-col text-left">
             <span className="font-serif text-sm font-bold leading-none text-primary">
               {negocio.nombre}

@@ -1,0 +1,8 @@
+User-agent: *
+Allow: /
+
+# Bloquear el panel de administración a indexadores
+Disallow: /*/admin
+
+# Sitemap (actualiza el dominio cuando lo tengas)
+Sitemap: https://nexomenus.netlify.app/sitemap.xml

@@ -21,7 +21,7 @@ export function MenuHero({ negocio, idioma = "es" }) {
 
       <div className="relative mx-auto flex max-w-4xl flex-col items-center px-6 pt-16 pb-20 text-center md:pt-24 md:pb-28">
         <Logo
-          logoUrl={negocio.logo_url || "/logo-medina.png"}
+          logoUrl={negocio.logo_url}
           nombre={negocio.nombre}
           size="hero"
           className="mb-6"

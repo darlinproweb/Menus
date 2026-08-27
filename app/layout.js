@@ -28,14 +28,33 @@ const inter = Inter({
 });
 
 export const metadata = {
-  title: "NexoLink Menus",
-  description: "Catálogos y menús digitales para negocios locales"
+  title: {
+    default: "NexoLink Menus — Menús Digitales Interactivos",
+    template: "%s | NexoLink Menus"
+  },
+  description: "Plataforma multi-tenant de menús y catálogos digitales para restaurantes, cafeterías y negocios locales. Código QR instantáneo, pedidos por WhatsApp y panel admin de autoservicio.",
+  keywords: ["menú digital", "catálogo digital", "restaurante", "código QR", "pedidos WhatsApp", "NexoLink"],
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "https://nexomenus.netlify.app"),
+  icons: {
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+    ],
+    apple: [
+      { url: "/apple-icon", sizes: "180x180", type: "image/png" }
+    ],
+  },
+  openGraph: {
+    siteName: "NexoLink Menus",
+    locale: "es_DO",
+    type: "website"
+  }
 };
 
 export default function RootLayout({ children }) {
   return (
     <html
       lang="es"
+      scroll-behavior="smooth"
       className={`${fraunces.variable} ${plexMono.variable} ${playfair.variable} ${inter.variable}`}
     >
       <body>{children}</body>

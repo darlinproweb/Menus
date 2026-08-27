@@ -20,6 +20,13 @@ su propio contenido en `tudominio.com/su-slug/admin` sin pasar por ti.
       para plantillas con estructura de 3 niveles (Categoría > Grupo > Ítem),
       precios en texto libre, y el negocio de ejemplo `medina-demo` (plantilla
       `medina-grill`). Es aditiva: no rompe nada de lo anterior.
+   3. Todo el contenido de `supabase/migration_super_admin.sql` — crea la tabla
+      `super_admins` y actualiza las políticas RLS para admitir acceso total.
+   4. Todo el contenido de `supabase/migration_bistro_chic.sql` — inserta el
+      negocio de demo `bistro-demo` con la plantilla `bistro-chic` y su menú
+      de ejemplo (cafetería artesanal L'Étoile).
+   5. (Opcional) `supabase/migration_traducciones.sql` — agrega columnas `_en`
+      a productos y categorías para traducciones manuales al inglés.
 3. Ve a **Authentication > Providers** y confirma que **Email** esté activo
    (viene activo por defecto). El login del panel usa "magic link" (sin
    contraseña), así que no necesitas configurar nada más para probarlo.

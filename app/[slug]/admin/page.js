@@ -25,6 +25,13 @@ export default function AdminPage({ params }) {
   const [loadingData, setLoadingData] = useState(false);
   const [savingId, setSavingId] = useState(null);
   const [statusMsg, setStatusMsg] = useState("");
+  const [agregando, setAgregando] = useState(false);
+
+  // --- Info del negocio (editable) ---
+  const [infoNegocio, setInfoNegocio] = useState({});
+  const [savingInfo, setSavingInfo] = useState(false);
+  const [infoMsg, setInfoMsg] = useState("");
+  const [mostrarInfoNegocio, setMostrarInfoNegocio] = useState(false);
 
   // --- Auth session ---
   useEffect(() => {
@@ -98,6 +105,16 @@ export default function AdminPage({ params }) {
       return;
     }
     setNegocio(neg);
+    setInfoNegocio({
+      nombre: neg.nombre || "",
+      tagline: neg.tagline || "",
+      descripcion: neg.descripcion || "",
+      whatsapp_numero: neg.whatsapp_numero || "",
+      color_acento: neg.color_acento || "#6B2737",
+      logo_url: neg.logo_url || "",
+      imagen_hero_url: neg.imagen_hero_url || "",
+      plantilla: neg.plantilla || "ticket-clasico",
+    });
 
     const [{ data: vinculo }, { data: superAdminRow }] = await Promise.all([
       supabase
@@ -153,6 +170,33 @@ export default function AdminPage({ params }) {
   useEffect(() => {
     cargarTodo();
   }, [cargarTodo]);
+
+  // --- Guardar información del negocio ---
+  const guardarInfoNegocio = async () => {
+    setSavingInfo(true);
+    setInfoMsg("");
+    const { error } = await supabase
+      .from("negocios")
+      .update({
+        nombre: infoNegocio.nombre,
+        tagline: infoNegocio.tagline || null,
+        descripcion: infoNegocio.descripcion || null,
+        whatsapp_numero: infoNegocio.whatsapp_numero || null,
+        color_acento: infoNegocio.color_acento || null,
+        logo_url: infoNegocio.logo_url || null,
+        imagen_hero_url: infoNegocio.imagen_hero_url || null,
+        plantilla: infoNegocio.plantilla || "ticket-clasico",
+      })
+      .eq("id", negocio.id);
+    setSavingInfo(false);
+    if (!error) {
+      setNegocio((prev) => ({ ...prev, ...infoNegocio }));
+      setInfoMsg("✓ Información actualizada.");
+    } else {
+      setInfoMsg(`Error: ${error.message}`);
+    }
+    setTimeout(() => setInfoMsg(""), 3000);
+  };
 
   // --- Edición local ---
   const actualizarCampo = (id, campo, valor) => {
@@ -232,6 +276,7 @@ export default function AdminPage({ params }) {
 
   const agregarProducto = async () => {
     if (!negocio) return;
+    setAgregando(true);
     const { data, error } = await supabase
       .from("productos")
       .insert({
@@ -243,8 +288,19 @@ export default function AdminPage({ params }) {
       })
       .select()
       .single();
+    setAgregando(false);
 
-    if (!error && data) setProductos((prev) => [...prev, data]);
+    if (!error && data) {
+      setProductos((prev) => [...prev, data]);
+      setStatusMsg("✓ Producto agregado. Edita sus campos y guarda.");
+      // Scroll suave al final de la lista para ver el nuevo ítem
+      setTimeout(() => {
+        window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+      }, 100);
+    } else {
+      setStatusMsg(`Error al agregar producto: ${error?.message || "intenta de nuevo"}`);
+    }
+    setTimeout(() => setStatusMsg(""), 4000);
   };
 
   // --- Render ---
@@ -440,7 +496,119 @@ export default function AdminPage({ params }) {
         </button>
       </div>
 
+      {/* Sección: Información del Negocio (colapsable) */}
+      <div className="mb-6 border border-line rounded-xl bg-white/70 shadow-xs overflow-hidden">
+        <button
+          type="button"
+          onClick={() => setMostrarInfoNegocio((v) => !v)}
+          className="w-full flex items-center justify-between px-4 sm:px-5 py-4 text-left hover:bg-white/50 transition-colors"
+        >
+          <h2 className="font-display text-base sm:text-lg text-ink font-semibold flex items-center gap-2">
+            <span>⚙️</span> Información del Negocio
+          </h2>
+          <span className={`text-ink2 text-xs font-mono transition-transform ${mostrarInfoNegocio ? "rotate-180" : ""}`}>▼</span>
+        </button>
 
+        {mostrarInfoNegocio && (
+          <div className="px-4 sm:px-5 pb-5 border-t border-line/60 pt-4 space-y-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <CampoInfo label="Nombre del Negocio">
+                <input
+                  className="campo"
+                  value={infoNegocio.nombre || ""}
+                  onChange={(e) => setInfoNegocio((p) => ({ ...p, nombre: e.target.value }))}
+                  placeholder="Ej. Mi Restaurante"
+                />
+              </CampoInfo>
+              <CampoInfo label="Tagline (subtítulo del hero)">
+                <input
+                  className="campo"
+                  value={infoNegocio.tagline || ""}
+                  onChange={(e) => setInfoNegocio((p) => ({ ...p, tagline: e.target.value }))}
+                  placeholder="Ej. Cocina de autor desde 2010"
+                />
+              </CampoInfo>
+              <div className="sm:col-span-2">
+                <CampoInfo label="Descripción (frase del hero)">
+                  <textarea
+                    className="campo"
+                    rows={2}
+                    value={infoNegocio.descripcion || ""}
+                    onChange={(e) => setInfoNegocio((p) => ({ ...p, descripcion: e.target.value }))}
+                    placeholder="Ej. Los mejores cortes a la parrilla, mariscos frescos y mucho más."
+                  />
+                </CampoInfo>
+              </div>
+              <CampoInfo label="WhatsApp (sin + ni espacios)">
+                <input
+                  className="campo"
+                  value={infoNegocio.whatsapp_numero || ""}
+                  onChange={(e) => setInfoNegocio((p) => ({ ...p, whatsapp_numero: e.target.value }))}
+                  placeholder="Ej. 18095551234"
+                />
+              </CampoInfo>
+              <CampoInfo label="Color de Acento">
+                <div className="flex items-center gap-2">
+                  <input
+                    type="color"
+                    value={infoNegocio.color_acento || "#6B2737"}
+                    onChange={(e) => setInfoNegocio((p) => ({ ...p, color_acento: e.target.value }))}
+                    className="h-9 w-12 rounded border border-line cursor-pointer p-0.5 bg-white"
+                  />
+                  <input
+                    className="campo flex-1"
+                    value={infoNegocio.color_acento || ""}
+                    onChange={(e) => setInfoNegocio((p) => ({ ...p, color_acento: e.target.value }))}
+                    placeholder="#6B2737"
+                  />
+                </div>
+              </CampoInfo>
+              <CampoInfo label="URL del Logo">
+                <input
+                  className="campo"
+                  value={infoNegocio.logo_url || ""}
+                  onChange={(e) => setInfoNegocio((p) => ({ ...p, logo_url: e.target.value }))}
+                  placeholder="https://…"
+                />
+              </CampoInfo>
+              <CampoInfo label="URL Imagen Hero (fondo de portada)">
+                <input
+                  className="campo"
+                  value={infoNegocio.imagen_hero_url || ""}
+                  onChange={(e) => setInfoNegocio((p) => ({ ...p, imagen_hero_url: e.target.value }))}
+                  placeholder="https://…"
+                />
+              </CampoInfo>
+              <CampoInfo label="Plantilla de diseño">
+                <select
+                  className="campo"
+                  value={infoNegocio.plantilla || "ticket-clasico"}
+                  onChange={(e) => setInfoNegocio((p) => ({ ...p, plantilla: e.target.value }))}
+                >
+                  <option value="ticket-clasico">🎟️ Ticket Clásico (recibo retro)</option>
+                  <option value="medina-grill">🔥 Fuego &amp; Brasa (steakhouse oscuro)</option>
+                  <option value="bistro-chic">☕ Bistro Chic (cafetería elegante)</option>
+                </select>
+              </CampoInfo>
+            </div>
+
+            <div className="flex items-center justify-between pt-2 border-t border-line/60">
+              {infoMsg ? (
+                <span className={`text-xs font-mono ${infoMsg.startsWith("Error") ? "text-burgundy" : "text-emerald-700"}`}>
+                  {infoMsg}
+                </span>
+              ) : <span />}
+              <button
+                onClick={guardarInfoNegocio}
+                disabled={savingInfo}
+                className="bg-ink text-paper text-xs font-mono px-5 py-2.5 rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 shrink-0"
+              >
+                {savingInfo ? "Guardando…" : "Guardar información"}
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
 
       {statusMsg && (
         <div className="mb-4 text-sm font-mono bg-white/70 border border-line rounded px-3 py-2">
@@ -499,13 +667,15 @@ export default function AdminPage({ params }) {
               </div>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <Campo label="Nombre">
-                <input
-                  className="campo"
-                  value={p.nombre}
-                  onChange={(e) => actualizarCampo(p.id, "nombre", e.target.value)}
-                />
-              </Campo>
+              <div className="sm:col-span-2">
+                <Campo label="Nombre">
+                  <input
+                    className="campo"
+                    value={p.nombre}
+                    onChange={(e) => actualizarCampo(p.id, "nombre", e.target.value)}
+                  />
+                </Campo>
+              </div>
               <Campo label="Categoría">
                 <input
                   list={`categorias-list-${slug}`}
@@ -524,14 +694,6 @@ export default function AdminPage({ params }) {
                   onChange={(e) =>
                     actualizarCampo(p.id, "precio", parseFloat(e.target.value) || 0)
                   }
-                />
-              </Campo>
-              <Campo label="Foto (URL)">
-                <input
-                  className="campo"
-                  value={p.foto_url || ""}
-                  onChange={(e) => actualizarCampo(p.id, "foto_url", e.target.value)}
-                  placeholder="https://…"
                 />
               </Campo>
               <div className="sm:col-span-2">
@@ -618,9 +780,10 @@ export default function AdminPage({ params }) {
 
       <button
         onClick={agregarProducto}
-        className="mt-6 w-full border border-dashed border-ink2 rounded-lg py-3 text-sm font-mono text-ink2 hover:bg-white/50"
+        disabled={agregando}
+        className="mt-6 w-full border border-dashed border-ink2 rounded-lg py-3 text-sm font-mono text-ink2 hover:bg-white/50 disabled:opacity-50 disabled:cursor-wait transition-opacity"
       >
-        + Agregar producto
+        {agregando ? "Agregando…" : "+ Agregar producto"}
       </button>
 
       <a
@@ -645,29 +808,23 @@ export default function AdminPage({ params }) {
           onClose={() => setMostrarModalQR(false)}
         />
       )}
-
-      <style jsx global>{`
-        .campo {
-          width: 100%;
-          border: 1px solid #c9c0ae;
-          border-radius: 0.375rem;
-          padding: 0.4rem 0.6rem;
-          background: white;
-          font-size: 0.9rem;
-        }
-      `}</style>
     </main>
   );
 }
 
 function ModalQR({ negocio, slug, onClose }) {
   const [copiado, setCopiado] = useState(false);
-  const [urlPublica, setUrlPublica] = useState("");
+  const defaultBaseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://nexomenus.netlify.app";
+  const [urlPublica, setUrlPublica] = useState(`${defaultBaseUrl}/${slug}`);
   const qrRef = useRef(null);
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
+    if (process.env.NEXT_PUBLIC_APP_URL) {
+      setUrlPublica(`${process.env.NEXT_PUBLIC_APP_URL.replace(/\/+$/, "")}/${slug}`);
+    } else if (typeof window !== "undefined" && !window.location.hostname.includes("localhost") && !window.location.hostname.includes("127.0.0.1")) {
       setUrlPublica(`${window.location.origin}/${slug}`);
+    } else {
+      setUrlPublica(`https://nexomenus.netlify.app/${slug}`);
     }
   }, [slug]);
 
@@ -740,7 +897,8 @@ function ModalQR({ negocio, slug, onClose }) {
 
     ctx.fillStyle = "#4A4338";
     ctx.font = "20px monospace";
-    ctx.fillText(urlPublica.replace(/^https?:\/\//, ""), 400, 850);
+    const textoUrl = (urlPublica || `${defaultBaseUrl}/${slug}`).replace(/^https?:\/\//, "");
+    ctx.fillText(textoUrl, 400, 850);
 
     // Pie de página
     ctx.fillStyle = "#A09580";
@@ -774,7 +932,7 @@ function ModalQR({ negocio, slug, onClose }) {
           className="bg-white p-5 rounded-2xl shadow-xs inline-block mb-4 border border-line"
         >
           <QRCodeCanvas
-            value={urlPublica || `http://localhost:3000/${slug}`}
+            value={urlPublica || `${defaultBaseUrl}/${slug}`}
             size={220}
             level="H"
             marginSize={1}
@@ -818,6 +976,15 @@ function Campo({ label, children }) {
       <span className="block text-xs font-mono text-ink2 mb-1">{label}</span>
       {children}
     </label>
+  );
+}
+
+function CampoInfo({ label, children }) {
+  return (
+    <div className="block">
+      <span className="block text-xs font-mono text-ink2 mb-1">{label}</span>
+      {children}
+    </div>
   );
 }
 

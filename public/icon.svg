@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 64 64" fill="none">
+  <defs>
+    <linearGradient id="nexoGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#6B2737" />
+      <stop offset="100%" stop-color="#2F4F3E" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Rounded Background Container with Brand Gradient -->
+  <rect width="64" height="64" rx="16" fill="url(#nexoGrad)" />
+  
+  <!-- Subtle inner border highlight -->
+  <rect x="0.75" y="0.75" width="62.5" height="62.5" rx="15.25" stroke="#FFFFFF" stroke-opacity="0.2" stroke-width="1.5" />
+  
+  <!-- Utensils Brand Icon -->
+  <g transform="translate(14, 14) scale(1.5)" stroke="#FBF8F3" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" fill="none">
+    <!-- Tenedor -->
+    <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2" />
+    <path d="M7 2v20" />
+    <!-- Cuchillo -->
+    <path d="M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7" />
+  </g>
+</svg>
