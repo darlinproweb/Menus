@@ -39,6 +39,10 @@ qué diseño usa `app/[slug]/page.js`:
   diseño real de Medina's. Usa `categorias` + `productos.grupo` para su
   estructura de 3 niveles, y soporta `precio_texto`, `nota` y `destacado`
   por producto.
+- **`bistro-chic`**: la plantilla luminosa y sofisticada estilo cafetería,
+  brunch y bistró. Cuenta con paleta cálida (marfil, oliva, terracota), tarjetas
+  flotantes de platos, buscador interactivo y una **bandeja de pedidos flotante**
+  que permite al cliente armar su comanda y enviarla directo por WhatsApp.
 
 Para agregar una plantilla nueva: crea una carpeta en
 `components/templates/tu-plantilla/`, un componente de entrada como

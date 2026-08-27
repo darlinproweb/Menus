@@ -1,7 +1,8 @@
 import Image from "next/image";
 import { Logo } from "./Logo";
+import { traducirMenuTexto } from "@/lib/i18n";
 
-export function MenuHero({ negocio }) {
+export function MenuHero({ negocio, idioma = "es" }) {
   const heroImg = negocio.imagen_hero_url || "/hero-parrilla.png";
 
   return (
@@ -29,7 +30,7 @@ export function MenuHero({ negocio }) {
         {negocio.tagline && (
           <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1 text-xs uppercase tracking-[0.3em] text-primary backdrop-blur-md">
             <span className="h-1.5 w-1.5 rounded-full bg-accent animate-pulse" />
-            <span>{negocio.tagline}</span>
+            <span>{traducirMenuTexto(negocio.tagline, idioma)}</span>
           </div>
         )}
 
@@ -39,7 +40,7 @@ export function MenuHero({ negocio }) {
 
         {negocio.descripcion && (
           <p className="mt-6 max-w-xl text-pretty leading-relaxed text-muted-foreground/90 text-sm md:text-base">
-            {negocio.descripcion}
+            {traducirMenuTexto(negocio.descripcion, idioma)}
           </p>
         )}
       </div>

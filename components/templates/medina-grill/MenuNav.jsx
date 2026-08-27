@@ -2,8 +2,10 @@
 
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import { LanguageSelector } from "@/components/LanguageSelector";
+import { traducirMenuTexto } from "@/lib/i18n";
 
-export function MenuNav({ negocio, categorias }) {
+export function MenuNav({ negocio, categorias, idioma, onCambiarIdioma }) {
   const [activeId, setActiveId] = useState(categorias[0]?.id || "");
 
   useEffect(() => {
@@ -31,7 +33,7 @@ export function MenuNav({ negocio, categorias }) {
       aria-label="Categorías del menú"
       className="sticky top-0 z-30 border-b border-primary/20 bg-background/90 backdrop-blur-xl shadow-lg shadow-black/40"
     >
-      <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-3">
+      <div className="mx-auto flex max-w-5xl items-center justify-between px-4 py-2.5 gap-2">
         <a href="#" className="flex items-center gap-2.5 shrink-0 group">
           <div className="relative overflow-hidden rounded-lg border border-primary/30 bg-black/50 p-0.5 transition-transform group-hover:scale-105">
             <Image
@@ -49,7 +51,7 @@ export function MenuNav({ negocio, categorias }) {
           </div>
         </a>
 
-        <ul className="flex items-center gap-2 overflow-x-auto py-1 px-2">
+        <ul className="flex items-center gap-2 overflow-x-auto py-1 px-2 flex-1 no-scrollbar">
           {categorias.map((categoria) => {
             const isActive = activeId === categoria.id;
             return (
@@ -62,12 +64,22 @@ export function MenuNav({ negocio, categorias }) {
                       : "text-muted-foreground hover:text-primary hover:bg-primary/10"
                   }`}
                 >
-                  {categoria.nombre}
+                  {traducirMenuTexto(categoria, idioma, "nombre")}
                 </a>
               </li>
             );
           })}
         </ul>
+
+        {onCambiarIdioma && (
+          <div className="shrink-0 pl-1">
+            <LanguageSelector
+              idioma={idioma}
+              onCambiarIdioma={onCambiarIdioma}
+              variant="medina"
+            />
+          </div>
+        )}
       </div>
     </nav>
   );
