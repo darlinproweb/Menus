@@ -26,11 +26,11 @@ import {
 
 export default function Home() {
   const [activeTemplate, setActiveTemplate] = useState("medina-grill");
-  const [slugInput, setSlugInput] = useState("medina-demo");
+  const [slugInput, setSlugInput] = useState("fuego-brasa");
   const [copied, setCopied] = useState(false);
 
   const DEMO_SLUGS = {
-    "medina-grill": "medina-demo",
+    "medina-grill": "fuego-brasa",
     "ticket-clasico": "restaurante-demo",
     "bistro-chic": "bistro-demo",
   };
@@ -97,7 +97,7 @@ export default function Home() {
               Demo Clásico
             </Link>
             <Link
-              href="/medina-demo"
+              href="/fuego-brasa"
               className="inline-flex items-center gap-2 text-xs font-mono font-medium px-4 py-2 rounded-full bg-[#6B2737] text-white shadow-md hover:bg-[#441721] transition-all hover:shadow-lg"
             >
               <Flame className="w-3.5 h-3.5 text-amber-300" />
@@ -162,12 +162,12 @@ export default function Home() {
         <div className="mt-4 flex flex-wrap items-center justify-center gap-2 text-xs font-mono text-[#4A4338]">
           <span className="text-[#4A4338]/70">Rutas de demostración listas:</span>
           <button
-            onClick={() => { setSlugInput("medina-demo"); setActiveTemplate("medina-grill"); }}
+            onClick={() => { setSlugInput("fuego-brasa"); setActiveTemplate("medina-grill"); }}
             className={`px-2.5 py-1 rounded-md transition-all ${
-              slugInput === "medina-demo" ? "bg-[#6B2737] text-white font-bold" : "bg-white/60 hover:bg-white text-[#201C16]"
+              slugInput === "fuego-brasa" ? "bg-[#6B2737] text-white font-bold" : "bg-white/60 hover:bg-white text-[#201C16]"
             }`}
           >
-            /medina-demo
+            /fuego-brasa
           </button>
           <button
             onClick={() => { setSlugInput("restaurante-demo"); setActiveTemplate("ticket-clasico"); }}
@@ -204,7 +204,7 @@ export default function Home() {
           {/* Toggle Controls — 3 opciones */}
           <div className="mt-6 inline-flex p-1.5 bg-white/80 rounded-2xl border border-[#C9C0AE] shadow-sm gap-1.5 flex-wrap justify-center">
             <button
-              onClick={() => { setActiveTemplate("medina-grill"); setSlugInput("medina-demo"); }}
+              onClick={() => { setActiveTemplate("medina-grill"); setSlugInput("fuego-brasa"); }}
               className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
                 activeTemplate === "medina-grill"
                   ? "bg-[#201C16] text-[#FFC700] shadow-md"
@@ -258,7 +258,7 @@ export default function Home() {
                   <div className="flex items-center gap-2"><Check className="w-4 h-4 text-emerald-600" /> Soporte para Etiquetas "Destacado"</div>
                 </div>
                 <div className="pt-4">
-                  <Link href="/medina-demo" className="inline-flex items-center justify-center gap-2 w-full px-5 py-3 rounded-xl bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white font-semibold text-sm transition-all shadow-md">
+                  <Link href="/fuego-brasa" className="inline-flex items-center justify-center gap-2 w-full px-5 py-3 rounded-xl bg-gradient-to-r from-amber-600 to-amber-700 hover:from-amber-700 hover:to-amber-800 text-white font-semibold text-sm transition-all shadow-md">
                     Ver Demo Real Fuego &amp; Brasa <ExternalLink className="w-4 h-4" />
                   </Link>
                 </div>
@@ -651,7 +651,7 @@ export default function Home() {
             <Link href="/restaurante-demo" className="hover:text-[#6B2737] underline">
               Demo Ticket Clásico
             </Link>
-            <Link href="/medina-demo" className="hover:text-[#6B2737] underline">
+            <Link href="/fuego-brasa" className="hover:text-[#6B2737] underline">
               Demo Fuego &amp; Brasa
             </Link>
             <Link href="/bistro-demo" className="hover:text-[#6B2737] underline">
