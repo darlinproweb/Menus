@@ -30,12 +30,12 @@ export function BistroHero({ negocio, idioma }) {
       <div className="relative z-10 mx-auto flex max-w-4xl flex-col items-center px-6 pt-12 pb-14 text-center md:pt-16 md:pb-18">
         {/* Logo Badge */}
         {negocio.logo_url ? (
-          <div className="mb-5 relative h-24 w-24 overflow-hidden rounded-full border-4 border-[#FFFFFF] shadow-md shadow-[#2D2A26]/10 transition-transform hover:scale-105">
+          <div className="mb-5 relative h-20 w-auto max-w-[240px] px-3 py-1 flex items-center justify-center overflow-hidden rounded-2xl border-2 border-[#E8DEC9] bg-white/90 shadow-md shadow-[#2D2A26]/10 transition-transform hover:scale-105">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={negocio.logo_url}
               alt={negocio.nombre}
-              className="h-full w-full object-cover"
+              className="max-h-16 w-auto object-contain"
             />
           </div>
         ) : (

@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 340 100" width="340" height="100">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#7C2D12" />
+      <stop offset="50%" stop-color="#9A3412" />
+      <stop offset="100%" stop-color="#431407" />
+    </linearGradient>
+    <linearGradient id="goldText" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#FED7AA" />
+      <stop offset="50%" stop-color="#FDBA74" />
+      <stop offset="100%" stop-color="#FB923C" />
+    </linearGradient>
+    <filter id="dropShadow" x="-10%" y="-10%" width="120%" height="130%">
+      <feDropShadow dx="1" dy="2" stdDeviation="2" flood-color="#000" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+
+  <!-- Badge Background -->
+  <rect x="5" y="10" width="330" height="80" rx="40" fill="url(#bgGrad)" stroke="#EA580C" stroke-width="2.5" filter="url(#dropShadow)"/>
+
+  <!-- Chef Silhouette Icon inside circular plate -->
+  <g transform="translate(240, 16)">
+    <circle cx="34" cy="34" r="30" fill="#EA580C" stroke="#FED7AA" stroke-width="2" />
+    <!-- Chef Hat -->
+    <path d="M 28 20 C 24 16, 20 18, 20 23 C 17 25, 17 31, 22 34 L 46 34 C 51 31, 51 25, 48 23 C 48 18, 44 16, 40 20 C 37 15, 31 15, 28 20 Z" fill="#FFFFFF"/>
+    <!-- Chef Face / Head -->
+    <circle cx="34" cy="38" r="5" fill="#FED7AA" />
+    <!-- Chef Body & Running Silhouette -->
+    <path d="M 28 44 L 40 44 L 44 56 L 38 56 L 35 48 L 33 48 L 30 56 L 24 56 Z" fill="#FFFFFF"/>
+    <!-- Serving Platter / Tray -->
+    <ellipse cx="48" cy="40" rx="7" ry="2" fill="#FED7AA" />
+  </g>
+
+  <!-- Text Palais -->
+  <text x="30" y="55" font-family="'Brush Script MT', 'Dancing Script', 'Playfair Display', cursive, serif" font-size="44" font-weight="bold" font-style="italic" fill="url(#goldText)" filter="url(#dropShadow)" letter-spacing="1">
+    Palais
+  </text>
+
+  <!-- Subtitle Restaurant Express -->
+  <rect x="28" y="63" width="190" height="18" rx="9" fill="#18181B" opacity="0.85" />
+  <text x="123" y="76" font-family="'Montserrat', 'Arial', sans-serif" font-size="10.5" font-weight="900" text-anchor="middle" fill="#FFFFFF" letter-spacing="1.8">
+    RESTAURANT EXPRESS
+  </text>
+</svg>

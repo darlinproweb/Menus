@@ -20,14 +20,12 @@ export function Logo({ logoUrl, nombre, size = "md", className = "", showTagline
           aria-hidden="true"
         />
         {logoUrl ? (
-          <div className="relative overflow-hidden rounded-2xl p-1.5 bg-black/40 border border-primary/20 backdrop-blur-sm">
-            <Image
+          <div className="relative overflow-hidden rounded-2xl p-2 px-4 bg-black/50 border border-primary/30 backdrop-blur-sm shadow-xl">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
               src={logoUrl}
               alt={`${nombre} logo`}
-              width={width}
-              height={height}
-              priority={size === "hero" || size === "lg"}
-              className="object-contain transition-transform duration-500 group-hover:scale-105"
+              className="h-16 w-auto max-w-[240px] object-contain transition-transform duration-500 group-hover:scale-105"
             />
           </div>
         ) : (

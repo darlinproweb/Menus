@@ -43,7 +43,7 @@ export function TicketClasicoTemplate({ negocio, productos, slug }) {
           <img
             src={negocio.logo_url}
             alt={negocio.nombre}
-            className="w-16 h-16 rounded-full object-cover mx-auto mb-3"
+            className="h-16 w-auto max-w-[220px] object-contain mx-auto mb-3 filter drop-shadow-sm"
           />
         )}
         <h1

@@ -109,9 +109,9 @@ export default function Home() {
 
       {/* Hero Section */}
       <section className="pt-16 pb-20 px-6 max-w-7xl mx-auto text-center relative">
-        {/* Animated Badge */}
-        <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-white/80 border border-[#C9C0AE] shadow-sm mb-6 text-xs font-mono text-[#2F4F3E] backdrop-blur-sm animate-float-slow">
-          <span className="w-2 h-2 rounded-full bg-[#2F4F3E] animate-ping" />
+        {/* Hero Badge */}
+        <div className="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-white/90 border border-[#C9C0AE] shadow-sm mb-6 text-xs font-mono text-[#2F4F3E]">
+          <span className="w-2 h-2 rounded-full bg-[#2F4F3E]" />
           <Sparkles className="w-3.5 h-3.5 text-amber-600" />
           Plataforma de Menús & Catálogos Digitales
         </div>
@@ -163,25 +163,22 @@ export default function Home() {
           <span className="text-[#4A4338]/70">Rutas de demostración listas:</span>
           <button
             onClick={() => { setSlugInput("fuego-brasa"); setActiveTemplate("medina-grill"); }}
-            className={`px-2.5 py-1 rounded-md transition-all ${
-              slugInput === "fuego-brasa" ? "bg-[#6B2737] text-white font-bold" : "bg-white/60 hover:bg-white text-[#201C16]"
-            }`}
+            className={`px-2.5 py-1 rounded-md transition-all ${slugInput === "fuego-brasa" ? "bg-[#6B2737] text-white font-bold" : "bg-white/60 hover:bg-white text-[#201C16]"
+              }`}
           >
             /fuego-brasa
           </button>
           <button
             onClick={() => { setSlugInput("restaurante-demo"); setActiveTemplate("ticket-clasico"); }}
-            className={`px-2.5 py-1 rounded-md transition-all ${
-              slugInput === "restaurante-demo" ? "bg-[#2F4F3E] text-white font-bold" : "bg-white/60 hover:bg-white text-[#201C16]"
-            }`}
+            className={`px-2.5 py-1 rounded-md transition-all ${slugInput === "restaurante-demo" ? "bg-[#2F4F3E] text-white font-bold" : "bg-white/60 hover:bg-white text-[#201C16]"
+              }`}
           >
             /restaurante-demo
           </button>
           <button
             onClick={() => { setSlugInput("bistro-demo"); setActiveTemplate("bistro-chic"); }}
-            className={`px-2.5 py-1 rounded-md transition-all ${
-              slugInput === "bistro-demo" ? "bg-amber-700 text-white font-bold" : "bg-white/60 hover:bg-white text-[#201C16]"
-            }`}
+            className={`px-2.5 py-1 rounded-md transition-all ${slugInput === "bistro-demo" ? "bg-amber-700 text-white font-bold" : "bg-white/60 hover:bg-white text-[#201C16]"
+              }`}
           >
             /bistro-demo
           </button>
@@ -205,33 +202,30 @@ export default function Home() {
           <div className="mt-6 inline-flex p-1.5 bg-white/80 rounded-2xl border border-[#C9C0AE] shadow-sm gap-1.5 flex-wrap justify-center">
             <button
               onClick={() => { setActiveTemplate("medina-grill"); setSlugInput("fuego-brasa"); }}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
-                activeTemplate === "medina-grill"
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all ${activeTemplate === "medina-grill"
                   ? "bg-[#201C16] text-[#FFC700] shadow-md"
                   : "text-[#4A4338] hover:text-[#201C16] hover:bg-[#EFEAE0]/50"
-              }`}
+                }`}
             >
               <Flame className="w-4 h-4 text-amber-500" />
               Fuego &amp; Brasa
             </button>
             <button
               onClick={() => { setActiveTemplate("ticket-clasico"); setSlugInput("restaurante-demo"); }}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
-                activeTemplate === "ticket-clasico"
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all ${activeTemplate === "ticket-clasico"
                   ? "bg-[#6B2737] text-white shadow-md"
                   : "text-[#4A4338] hover:text-[#201C16] hover:bg-[#EFEAE0]/50"
-              }`}
+                }`}
             >
               <Receipt className="w-4 h-4 text-emerald-300" />
               Ticket Clásico
             </button>
             <button
               onClick={() => { setActiveTemplate("bistro-chic"); setSlugInput("bistro-demo"); }}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
-                activeTemplate === "bistro-chic"
+              className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-semibold transition-all ${activeTemplate === "bistro-chic"
                   ? "bg-amber-700 text-white shadow-md"
                   : "text-[#4A4338] hover:text-[#201C16] hover:bg-[#EFEAE0]/50"
-              }`}
+                }`}
             >
               <ChefHat className="w-4 h-4 text-amber-600" />
               Bistro Chic
@@ -330,22 +324,22 @@ export default function Home() {
                       </div>
                       <div className="mt-4 space-y-4">
                         <div>
-                          <span className="text-[10px] font-mono uppercase tracking-wider text-amber-400 font-bold block mb-2">CORTES PREMIUM</span>
+                          <span className="text-[10px] font-mono uppercase tracking-wider text-amber-400 font-bold block mb-2">PARRILLADAS PARA COMPARTIR</span>
                           <div className="bg-amber-950/40 p-3 rounded-xl border border-amber-500/20 space-y-2">
                             <div className="flex justify-between items-baseline">
-                              <span className="font-serif text-sm font-semibold text-amber-100">Ribeye Importado 12oz</span>
-                              <span className="font-mono text-xs text-amber-400 font-bold">RD$ 1,850</span>
+                              <span className="font-serif text-sm font-semibold text-amber-100">Parrillada de Marisco 2P</span>
+                              <span className="font-mono text-xs text-amber-400 font-bold">RD$ 3,300</span>
                             </div>
-                            <p className="text-[11px] text-amber-200/70">Corte jugoso a la parrilla con mantequilla de hierbas.</p>
+                            <p className="text-[11px] text-amber-200/70">Pulpo, camarón, lambi, langostino, pescado y calamar a las brasas.</p>
                           </div>
                         </div>
                         <div>
                           <div className="bg-amber-950/40 p-3 rounded-xl border border-amber-500/20 space-y-2">
                             <div className="flex justify-between items-baseline">
-                              <span className="font-serif text-sm font-semibold text-amber-100">Churrasco Angus 10oz</span>
-                              <span className="font-mono text-xs text-amber-400 font-bold">RD$ 1,450</span>
+                              <span className="font-serif text-sm font-semibold text-amber-100">Costillitas Babe Back</span>
+                              <span className="font-mono text-xs text-amber-400 font-bold">RD$ 950</span>
                             </div>
-                            <p className="text-[11px] text-amber-200/70">Acompañado de chimichurri artesanal y yuca frita.</p>
+                            <p className="text-[11px] text-amber-200/70">Costillas tiernas y caramelizadas con salsa BBQ de la casa.</p>
                           </div>
                         </div>
                       </div>
@@ -365,23 +359,31 @@ export default function Home() {
                         <p className="text-[10px] font-mono uppercase tracking-widest text-[#4A4338] mt-1">Platos &amp; Catálogo Digital</p>
                       </div>
                       <div className="mt-6 space-y-4">
-                        <span className="font-mono text-xs uppercase tracking-widest text-[#6B2737] font-bold block">DESAYUNOS &amp; CAFÉ</span>
+                        <span className="font-mono text-xs uppercase tracking-widest text-[#6B2737] font-bold block">ENTRADAS &amp; PASTAS</span>
                         <div className="space-y-3">
                           <div>
                             <div className="menu-row">
-                              <span className="font-display text-sm font-semibold">Cappuccino Artesanal</span>
+                              <span className="font-display text-sm font-semibold">Canastitas de Plátano</span>
                               <span className="leader" />
-                              <span className="font-mono text-xs">RD$ 195</span>
+                              <span className="font-mono text-xs">RD$ 300/500</span>
                             </div>
-                            <p className="text-[11px] text-[#4A4338] mt-0.5">Espresso doble con leche cremada y canela.</p>
+                            <p className="text-[11px] text-[#4A4338] mt-0.5">Rellenas a tu gusto de carne o mariscos.</p>
                           </div>
                           <div>
                             <div className="menu-row">
-                              <span className="font-display text-sm font-semibold">Tostada de Aguacate</span>
+                              <span className="font-display text-sm font-semibold">Fettuccini Camarón/Pollo</span>
                               <span className="leader" />
-                              <span className="font-mono text-xs">RD$ 320</span>
+                              <span className="font-mono text-xs">RD$ 550/800</span>
                             </div>
-                            <p className="text-[11px] text-[#4A4338] mt-0.5">Pan de masa madre, huevo ponchado y tomate cherry.</p>
+                            <p className="text-[11px] text-[#4A4338] mt-0.5">A la Carbonara, Pomodoro o Boloñesa.</p>
+                          </div>
+                          <div>
+                            <div className="menu-row">
+                              <span className="font-display text-sm font-semibold">Canapé Mixto</span>
+                              <span className="leader" />
+                              <span className="font-mono text-xs">RD$ 350</span>
+                            </div>
+                            <p className="text-[11px] text-[#4A4338] mt-0.5">Bocadillos crujientes montados con carne y camarón.</p>
                           </div>
                         </div>
                       </div>
@@ -404,21 +406,21 @@ export default function Home() {
                         <p className="text-[10px] font-mono uppercase tracking-widest text-[#5C554C] mt-0.5">Café &amp; Brunch</p>
                       </div>
                       <div className="mt-4 space-y-3">
-                        <p className="text-[10px] font-mono uppercase tracking-wider text-amber-700 font-bold">CAFÉS &amp; ESPECIALIDADES</p>
+                        <p className="text-[10px] font-mono uppercase tracking-wider text-amber-700 font-bold">PESCADOS Y MARISCOS</p>
                         <div className="bistro-card rounded-2xl p-3 space-y-1">
                           <div className="flex justify-between items-start">
-                            <span className="font-serif-bistro text-sm font-semibold text-[#2D2A26]">Flat White Australiano</span>
-                            <span className="font-mono text-xs text-amber-700 font-bold shrink-0 ml-2">RD$ 240</span>
+                            <span className="font-serif-bistro text-sm font-semibold text-[#2D2A26]">Langosta 1.5 LB</span>
+                            <span className="font-mono text-xs text-amber-700 font-bold shrink-0 ml-2">RD$ 1,500</span>
                           </div>
-                          <p className="text-[11px] text-[#5C554C]">Doble shot con microespuma sedosa.</p>
+                          <p className="text-[11px] text-[#5C554C]">Al Termidor o Al Ajillo.</p>
                           <span className="text-[10px] font-mono text-amber-700/80 bg-amber-50 px-1.5 py-0.5 rounded-full border border-amber-200 inline-block">⭐ Destacado</span>
                         </div>
                         <div className="bistro-card rounded-2xl p-3 space-y-1">
                           <div className="flex justify-between items-start">
-                            <span className="font-serif-bistro text-sm font-semibold text-[#2D2A26]">Avocado Toast &amp; Poché</span>
-                            <span className="font-mono text-xs text-amber-700 font-bold shrink-0 ml-2">RD$ 450</span>
+                            <span className="font-serif-bistro text-sm font-semibold text-[#2D2A26]">Pescado Colorao</span>
+                            <span className="font-mono text-xs text-amber-700 font-bold shrink-0 ml-2">RD$ 1,200</span>
                           </div>
-                          <p className="text-[11px] text-[#5C554C]">Masa madre, feta y tomate confitado.</p>
+                          <p className="text-[11px] text-[#5C554C]">Frito o al vapor a la criolla, ajillo o coco.</p>
                         </div>
                       </div>
                     </div>

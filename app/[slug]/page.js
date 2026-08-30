@@ -4,6 +4,7 @@ import { construirEstructuraMenu } from "@/lib/construirEstructuraMenu";
 import { MedinaGrillTemplate } from "@/components/templates/medina-grill";
 import { BistroChicTemplate } from "@/components/templates/bistro-chic";
 import { TicketClasicoTemplate } from "@/components/templates/ticket-clasico";
+import { esSlugDemo, getDemoMenuData } from "@/lib/demoPalaisMenu";
 
 // Cliente de solo-lectura para renderizar en el servidor.
 const supabase = createClient(
@@ -12,12 +13,25 @@ const supabase = createClient(
 );
 
 async function getDatosNegocio(slug) {
-  const { data: negocio } = await supabase
-    .from("negocios")
-    .select("*")
-    .eq("slug", slug)
-    .eq("activo", true)
-    .maybeSingle();
+  let negocio = null;
+
+  try {
+    const { data } = await supabase
+      .from("negocios")
+      .select("*")
+      .eq("slug", slug)
+      .eq("activo", true)
+      .maybeSingle();
+
+    negocio = data;
+  } catch (error) {
+    console.error("Error al obtener datos del negocio:", error);
+  }
+
+  // Si es un slug de demostración, servimos los productos manteniendo intacta la información del negocio
+  if (esSlugDemo(slug)) {
+    return getDemoMenuData(slug, negocio);
+  }
 
   if (!negocio) return null;
 
