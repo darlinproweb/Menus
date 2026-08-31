@@ -6,6 +6,9 @@ import { BistroChicTemplate } from "@/components/templates/bistro-chic";
 import { TicketClasicoTemplate } from "@/components/templates/ticket-clasico";
 import { esSlugDemo, getDemoMenuData } from "@/lib/demoPalaisMenu";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 0;
+
 // Cliente de solo-lectura para renderizar en el servidor.
 const supabase = createClient(
   process.env.NEXT_PUBLIC_SUPABASE_URL,
@@ -28,13 +31,14 @@ async function getDatosNegocio(slug) {
     console.error("Error al obtener datos del negocio:", error);
   }
 
-  // Si es un slug de demostración, servimos los productos manteniendo intacta la información del negocio
-  if (esSlugDemo(slug)) {
-    return getDemoMenuData(slug, negocio);
+  // Si no se encontró el negocio en base de datos y es demo, usamos el demo en memoria
+  if (!negocio && esSlugDemo(slug)) {
+    return getDemoMenuData(slug, null);
   }
 
   if (!negocio) return null;
 
+  // Consultar siempre los productos y categorías reales actualizados en Supabase
   const [{ data: productos }, { data: categorias }] = await Promise.all([
     supabase
       .from("productos")
@@ -48,6 +52,11 @@ async function getDatosNegocio(slug) {
       .eq("negocio_id", negocio.id)
       .order("orden", { ascending: true })
   ]);
+
+  // Si es un demo pero la base de datos aún no tiene ningún producto cargado, usamos el demo por defecto
+  if (esSlugDemo(slug) && (!productos || productos.length === 0)) {
+    return getDemoMenuData(slug, negocio);
+  }
 
   return {
     negocio,
