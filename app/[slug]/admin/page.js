@@ -3,6 +3,7 @@
 import { useEffect, useState, useCallback, useRef, use } from "react";
 import { supabase } from "@/lib/supabaseClient";
 import { QRCodeCanvas } from "qrcode.react";
+import { esSlugDemo, DEMO_PRODUCTOS, DEMO_CATEGORIAS } from "@/lib/demoPalaisMenu";
 
 export default function AdminPage({ params }) {
   const { slug } = use(params);
@@ -26,6 +27,7 @@ export default function AdminPage({ params }) {
   const [savingId, setSavingId] = useState(null);
   const [statusMsg, setStatusMsg] = useState("");
   const [agregando, setAgregando] = useState(false);
+  const [sincronizandoDemo, setSincronizandoDemo] = useState(false);
 
   // --- Info del negocio (editable) ---
   const [infoNegocio, setInfoNegocio] = useState({});
@@ -155,17 +157,139 @@ export default function AdminPage({ params }) {
         .order("orden", { ascending: true })
     ]);
 
-    const productosCargados = prods || [];
+    let productosCargados = prods || [];
+
+    // Si es un negocio demo y la base de datos no tiene todos los productos aún:
+    if (esSlugDemo(slug) && productosCargados.length < 20) {
+      try {
+        // 1. Asegurar categorías demo
+        for (const cat of DEMO_CATEGORIAS) {
+          await supabase.from("categorias").upsert(
+            {
+              negocio_id: neg.id,
+              nombre: cat.nombre,
+              subtitulo: cat.subtitulo,
+              orden: cat.orden
+            },
+            { onConflict: "negocio_id, nombre" }
+          );
+        }
+
+        // 2. Limpiar productos antiguos obsoletos del demo
+        await supabase.from("productos").delete().eq("negocio_id", neg.id);
+
+        // 3. Insertar los 28 productos completos (sin id mock para que Supabase genere UUIDs reales)
+        const productosAInsertar = DEMO_PRODUCTOS.map((p, idx) => ({
+          negocio_id: neg.id,
+          nombre: p.nombre,
+          descripcion: p.descripcion,
+          precio: p.precio,
+          precio_texto: p.precio_texto || null,
+          categoria: p.categoria,
+          grupo: p.grupo || null,
+          nota: p.nota || null,
+          destacado: !!p.destacado,
+          disponible: p.disponible !== false,
+          orden: p.orden || idx + 1
+        }));
+
+        const { data: insertados, error: insertErr } = await supabase
+          .from("productos")
+          .insert(productosAInsertar)
+          .select();
+
+        if (!insertErr && insertados && insertados.length > 0) {
+          productosCargados = insertados;
+        } else {
+          productosCargados = DEMO_PRODUCTOS.map((p) => ({
+            ...p,
+            negocio_id: neg.id
+          }));
+        }
+      } catch (err) {
+        console.warn("Auto-sync demo productos en admin:", err);
+        productosCargados = DEMO_PRODUCTOS.map((p) => ({
+          ...p,
+          negocio_id: neg.id
+        }));
+      }
+    }
+
     setProductos(productosCargados);
 
+    const catsDemo = DEMO_CATEGORIAS.map((c) => c.nombre);
     const catsTabla = (cats || []).map((c) => c.nombre).filter(Boolean);
     const catsProds = productosCargados.map((p) => p.categoria).filter(Boolean);
-    const defaults = ["Desayunos", "Almuerzo", "Cenas", "Bebidas", "Postres", "Entradas", "Parrilla", "Bar"];
-    const unicas = Array.from(new Set([...catsTabla, ...catsProds, ...defaults]));
+    const defaults = [
+      "Entradas",
+      "Pastas",
+      "Pescados y Mariscos",
+      "Parrilladas & Especialidades",
+      "Desayunos",
+      "Almuerzo",
+      "Cenas",
+      "Bebidas",
+      "Postres",
+      "Parrilla",
+      "Bar"
+    ];
+    const unicas = Array.from(new Set([...catsDemo, ...catsTabla, ...catsProds, ...defaults]));
     setOpcionesCategorias(unicas);
 
     setLoadingData(false);
   }, [session, slug]);
+
+  const sincronizarMenuDemo = async () => {
+    if (!negocio) return;
+    setSincronizandoDemo(true);
+    setStatusMsg("Sincronizando los 28 productos completos con la base de datos...");
+    try {
+      for (const cat of DEMO_CATEGORIAS) {
+        await supabase.from("categorias").upsert(
+          {
+            negocio_id: negocio.id,
+            nombre: cat.nombre,
+            subtitulo: cat.subtitulo,
+            orden: cat.orden
+          },
+          { onConflict: "negocio_id, nombre" }
+        );
+      }
+
+      await supabase.from("productos").delete().eq("negocio_id", negocio.id);
+
+      const productosAInsertar = DEMO_PRODUCTOS.map((p, idx) => ({
+        negocio_id: negocio.id,
+        nombre: p.nombre,
+        descripcion: p.descripcion,
+        precio: p.precio,
+        precio_texto: p.precio_texto || null,
+        categoria: p.categoria,
+        grupo: p.grupo || null,
+        nota: p.nota || null,
+        destacado: !!p.destacado,
+        disponible: p.disponible !== false,
+        orden: p.orden || idx + 1
+      }));
+
+      const { data: nuevos, error } = await supabase
+        .from("productos")
+        .insert(productosAInsertar)
+        .select();
+
+      if (error) throw error;
+
+      setProductos(nuevos || productosAInsertar);
+      setStatusMsg("✓ ¡Menú completo de 28 productos sincronizado con éxito en la base de datos!");
+    } catch (err) {
+      console.error("Error al sincronizar menú demo:", err);
+      setProductos(DEMO_PRODUCTOS.map((p) => ({ ...p, negocio_id: negocio.id })));
+      setStatusMsg(`Menú de 28 productos cargado en pantalla. (Aviso: ${err.message})`);
+    } finally {
+      setSincronizandoDemo(false);
+      setTimeout(() => setStatusMsg(""), 5000);
+    }
+  };
 
   useEffect(() => {
     cargarTodo();
@@ -231,39 +355,79 @@ export default function AdminPage({ params }) {
   const guardarProducto = async (producto) => {
     setSavingId(producto.id);
     setStatusMsg("");
-    const { error } = await supabase
-      .from("productos")
-      .update({
-        nombre: producto.nombre,
-        descripcion: producto.descripcion,
-        precio: producto.precio,
-        precio_texto: producto.precio_texto || null,
-        categoria: producto.categoria,
-        grupo: producto.grupo || null,
-        nota: producto.nota || null,
-        destacado: !!producto.destacado,
-        disponible: producto.disponible,
-        foto_url: producto.foto_url
-      })
-      .eq("id", producto.id);
+    const esUUID =
+      typeof producto.id === "string" &&
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(producto.id);
+
+    let error = null;
+    if (esUUID) {
+      const res = await supabase
+        .from("productos")
+        .update({
+          nombre: producto.nombre,
+          descripcion: producto.descripcion,
+          precio: producto.precio,
+          precio_texto: producto.precio_texto || null,
+          categoria: producto.categoria,
+          grupo: producto.grupo || null,
+          nota: producto.nota || null,
+          destacado: !!producto.destacado,
+          disponible: producto.disponible,
+          foto_url: producto.foto_url
+        })
+        .eq("id", producto.id);
+      error = res.error;
+    } else {
+      const res = await supabase
+        .from("productos")
+        .insert({
+          negocio_id: negocio.id,
+          nombre: producto.nombre,
+          descripcion: producto.descripcion,
+          precio: producto.precio,
+          precio_texto: producto.precio_texto || null,
+          categoria: producto.categoria,
+          grupo: producto.grupo || null,
+          nota: producto.nota || null,
+          destacado: !!producto.destacado,
+          disponible: producto.disponible,
+          foto_url: producto.foto_url
+        })
+        .select()
+        .single();
+      error = res.error;
+      if (res.data) {
+        setProductos((prev) => prev.map((p) => (p.id === producto.id ? res.data : p)));
+      }
+    }
 
     setSavingId(null);
-    setStatusMsg(error ? `Error al guardar: ${error.message}` : "Guardado.");
+    setStatusMsg(error ? `Error al guardar: ${error.message}` : "Guardado con éxito.");
     setTimeout(() => setStatusMsg(""), 2500);
   };
 
   const toggleDisponible = async (producto) => {
     const nuevoValor = !producto.disponible;
     actualizarCampo(producto.id, "disponible", nuevoValor);
-    await supabase
-      .from("productos")
-      .update({ disponible: nuevoValor })
-      .eq("id", producto.id);
+    const esUUID =
+      typeof producto.id === "string" &&
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(producto.id);
+    if (esUUID) {
+      await supabase
+        .from("productos")
+        .update({ disponible: nuevoValor })
+        .eq("id", producto.id);
+    }
   };
 
   const eliminarProducto = async (id) => {
     if (!confirm("¿Eliminar este producto del menú?")) return;
-    await supabase.from("productos").delete().eq("id", id);
+    const esUUID =
+      typeof id === "string" &&
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+    if (esUUID) {
+      await supabase.from("productos").delete().eq("id", id);
+    }
     setProductos((prev) => prev.filter((p) => p.id !== id));
   };
 
@@ -629,6 +793,28 @@ export default function AdminPage({ params }) {
           </div>
         )}
       </div>
+
+      {/* Banner Menú Demo para Negocios Demo */}
+      {esSlugDemo(slug) && (
+        <div className="mb-6 p-4 border border-[#2F4F3E]/30 rounded-xl bg-white/80 shadow-xs flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div>
+            <h3 className="text-xs font-mono font-bold text-[#2F4F3E] uppercase tracking-wider flex items-center gap-1.5">
+              <span>📋</span> Catálogo del Menú ({productos.length} platos cargados)
+            </h3>
+            <p className="text-xs text-ink2 mt-0.5">
+              Incluye las 4 categorías: Entradas, Pastas, Pescados y Mariscos, y Parrilladas.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={sincronizarMenuDemo}
+            disabled={sincronizandoDemo}
+            className="px-4 py-2 rounded-lg bg-[#2F4F3E] hover:bg-[#1f3529] text-white text-xs font-mono font-semibold transition-all disabled:opacity-50 shrink-0 flex items-center gap-1.5 w-full sm:w-auto justify-center"
+          >
+            {sincronizandoDemo ? "Sincronizando…" : "⚡ Recargar los 28 Platos"}
+          </button>
+        </div>
+      )}
 
       {statusMsg && (
         <div className="mb-4 text-sm font-mono bg-white/70 border border-line rounded px-3 py-2">
